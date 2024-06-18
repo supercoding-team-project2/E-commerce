@@ -1,4 +1,4 @@
-package config;
+package com.github.supercodingproject2mall.config;
 
 import lombok.Getter;
 import lombok.Setter;
