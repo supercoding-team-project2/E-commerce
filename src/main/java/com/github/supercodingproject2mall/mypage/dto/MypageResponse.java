@@ -10,5 +10,5 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MypageResponse {
-    private List<Mypage> mypages;
+    private List<MypageUserInfo> mypageUserInfos;
 }

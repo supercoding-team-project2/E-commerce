@@ -1,6 +1,5 @@
 package com.github.supercodingproject2mall.controller;
 
-import com.github.supercodingproject2mall.mypage.dto.Mypage;
 import com.github.supercodingproject2mall.mypage.dto.MypageResponse;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

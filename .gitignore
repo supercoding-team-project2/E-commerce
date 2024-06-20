@@ -26,8 +26,12 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 application.yaml
-src/main/java/com/github/supercodingproject2mall/auth/entity
-src/main/java/com/github/supercodingproject2mall/auth/repository
+src/main/java/com/github/supercodingproject2mall/auth/
+src/main/java/com/github/supercodingproject2mall/cart/
+src/main/java/com/github/supercodingproject2mall/category/
+src/main/java/com/github/supercodingproject2mall/item/
+src/main/java/com/github/supercodingproject2mall/itemOption/
+src/main/java/com/github/supercodingproject2mall/order/
 
 ### NetBeans ###
 /nbproject/private/

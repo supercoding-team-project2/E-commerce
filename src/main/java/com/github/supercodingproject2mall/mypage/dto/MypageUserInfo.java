@@ -10,7 +10,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class Mypage {
+public class MypageUserInfo {
     private String username;
     private String email;
     private String phoneNum;

@@ -1,7 +1,7 @@
 package com.github.supercodingproject2mall.mypage.mapper;
 
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
-import com.github.supercodingproject2mall.mypage.dto.Mypage;
+import com.github.supercodingproject2mall.mypage.dto.MypageUserInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 
@@ -9,5 +9,5 @@ import org.mapstruct.factory.Mappers;
 public interface MypageMapper {
     MypageMapper INSTANCE = Mappers.getMapper(MypageMapper.class);
 
-    Mypage userEntityToMypage(UserEntity userEntity);
+    MypageUserInfo userEntityToMypage(UserEntity userEntity);
 }
