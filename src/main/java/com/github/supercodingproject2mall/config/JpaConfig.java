@@ -21,7 +21,6 @@ import java.util.Map;
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
-
 @EnableConfigurationProperties(DataSourceProperties.class)
 @RequiredArgsConstructor
 public class JpaConfig {
@@ -32,6 +31,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean1() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
+
         em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity",
                 "com.github.supercodingproject2mall.cart.entity",
                 "com.github.supercodingproject2mall.category.entity",
