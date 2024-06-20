@@ -26,6 +26,8 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 application.yaml
+src/main/java/com/github/supercodingproject2mall/auth/entity
+src/main/java/com/github/supercodingproject2mall/auth/repository
 
 ### NetBeans ###
 /nbproject/private/
