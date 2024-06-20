@@ -1,5 +1,6 @@
 package com.github.supercodingproject2mall.controller;
 
+import com.github.supercodingproject2mall.mypage.dto.MypageCartItemsDto;
 import com.github.supercodingproject2mall.mypage.dto.MypageResponse;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +26,14 @@ public class MypageController {
         return mypageService.findUserInfo(userId)
                 .map(mypage -> ResponseEntity.ok(new MypageResponse(Collections.singletonList(mypage))))
                 .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/mypage/cart/{userId}")
+    public ResponseEntity<List<MypageCartItemsDto>> getUserCartItems(@PathVariable String userId) {
+        List<MypageCartItemsDto> cartItems = mypageService.getCartItemsForUser(userId);
+        if (cartItems.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(cartItems);
     }
 }

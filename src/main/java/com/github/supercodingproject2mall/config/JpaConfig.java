@@ -16,7 +16,9 @@ import java.util.Map;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = {"com.github.supercodingproject2mall.auth.repository",},
+        basePackages = {"com.github.supercodingproject2mall.auth.repository",
+        "com.github.supercodingproject2mall.cart.repository",
+        },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
 
@@ -30,7 +32,13 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean1() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity");
+        em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity",
+                "com.github.supercodingproject2mall.cart.entity",
+                "com.github.supercodingproject2mall.category.entity",
+                "com.github.supercodingproject2mall.item.entity",
+                "com.github.supercodingproject2mall.itemOption.entity",
+                "com.github.supercodingproject2mall.order.entity"
+        );
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
