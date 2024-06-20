@@ -16,13 +16,9 @@ import java.util.Map;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = {"com.github.supercoding-project2-mall.repository.users",
-                "com.github.supercoding-project2-mall.repository.items",
-                "com.github.supercoding-project2-mall.repository.carts",
-                "com.github.supercoding-project2-mall.repository.sales",},
+        basePackages = {"com.github.supercodingproject2mall.auth.repository"},
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
-
 @EnableConfigurationProperties(DataSourceProperties.class)
 @RequiredArgsConstructor
 public class JpaConfig {
@@ -33,10 +29,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean1() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.github.supercoding-project2-mall.repository.users",
-                "com.github.supercoding-project2-mall.repository.items",
-                "com.github.supercoding-project2-mall.repository.carts",
-                "com.github.supercoding-project2-mall.repository.sales");
+        em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity");
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
