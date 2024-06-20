@@ -1,8 +1,10 @@
 package com.github.supercodingproject2mall.cart.service;
 
+import com.github.supercodingproject2mall.auth.entity.UserEntity;
+import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.cart.dto.CartRequest;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
-import com.github.supercodingproject2mall.cart.repository.CartJpaRepository;
+import com.github.supercodingproject2mall.cart.repository.CartRepository;
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import com.github.supercodingproject2mall.item.repository.ItemJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +18,7 @@ public class CartService {
 
     private final ItemJpaRepository itemJpaRepository;
     private final UserRepository userRepository;
-    private final CartJpaRepository cartJpaRepository;
+    private final CartRepository cartRepository;
 
     public String uploadCart(CartRequest cartRequest) {
 //        private Integer itemId;
@@ -38,7 +40,7 @@ public class CartService {
 
         //cartEntity에 저장
         CartEntity cartEntity = cartRequestToCartEntity(cartRequest,itemEntity,userEntity);
-        cartJpaRepository.save(cartEntity);
+        cartRepository.save(cartEntity);
         return "장바구니 등록";
     }
 
@@ -46,7 +48,7 @@ public class CartService {
         return CartEntity
                 .builder()
                 .count(cartRequest.getCount())
-                .user(userEntity)
+                //.user(userEntity)
                 .item(itemEntity)
                 .build();
     }
