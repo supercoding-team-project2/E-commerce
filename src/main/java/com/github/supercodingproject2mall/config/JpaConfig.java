@@ -16,10 +16,10 @@ import java.util.Map;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = {"com.github.supercoding-project2-mall.repository.users",
-                "com.github.supercoding-project2-mall.repository.items",
-                "com.github.supercoding-project2-mall.repository.carts",
-                "com.github.supercoding-project2-mall.repository.sales",},
+        basePackages = {"com.github.supercodingproject2mall.auth.repository",
+                "com.github.supercodingproject2mall.cart.repository",
+                "com.github.supercodingproject2mall.item.repository",
+                "com.github.supercodingproject2mall.sale.repository",},
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
 
