@@ -18,9 +18,10 @@ public class ApiResponse<T> {
         return ApiResponse.builder().responseType(ResponseType.SUCCESS).build();
     }
 
-    public static <T> ApiResponse<T> success(T data) {
+    public static <T> ApiResponse<T> success(T data , String message) {
         return ApiResponse.<T>builder()
                 .data(data)
+                .message(message)
                 .responseType(ResponseType.SUCCESS)
                 .build();
     }
@@ -51,6 +52,14 @@ public class ApiResponse<T> {
         return ApiResponse.<T>builder()
                 .message(errorType.getMessage())
                 .data(data)
+                .responseType(ResponseType.ERROR)
+                .build();
+    }
+
+    public static ApiResponse<MypageResponse> error(String message, ErrorType errorType) {
+        return ApiResponse.<MypageResponse>builder()
+                .message(message)
+                .data(null) // MypageResponse 타입의 데이터가 없으므로 null 처리
                 .responseType(ResponseType.ERROR)
                 .build();
     }

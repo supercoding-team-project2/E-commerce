@@ -19,9 +19,8 @@ public class MypageService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
 
-    public Optional<MypageUserInfo> findUserInfo(String userId){
-        Integer userIdInt = Integer.valueOf(userId);
-        return userRepository.findById(userIdInt).map(MypageMapper.INSTANCE::userEntityToMypage);
+    public Optional<MypageUserInfo> findUserInfo(Integer userId){
+        return userRepository.findById(userId).map(MypageMapper.INSTANCE::userEntityToMypage);
     }
 
     public List<MypageCartItemsDto> getCartItemsForUser(String userId) {

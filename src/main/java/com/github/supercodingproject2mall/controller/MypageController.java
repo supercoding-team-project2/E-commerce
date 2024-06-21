@@ -1,8 +1,12 @@
 package com.github.supercodingproject2mall.controller;
 
+import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
+import com.github.supercodingproject2mall.mypage.dto.ApiResponse;
 import com.github.supercodingproject2mall.mypage.dto.MypageCartItemsDto;
 import com.github.supercodingproject2mall.mypage.dto.MypageResponse;
+import com.github.supercodingproject2mall.mypage.exception.ErrorType;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,14 +22,20 @@ import java.util.List;
 @RequestMapping("/api")
 public class MypageController {
     private final MypageService mypageService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     // 유저 정보 조회 api
-    @GetMapping("/mypage/{userId}")
-    public ResponseEntity<MypageResponse> findUserInfo(@PathVariable String userId){
-        //TODO : jwt 구현시 userId 받아오는 로직 수정예정
-        return mypageService.findUserInfo(userId)
-                .map(mypage -> ResponseEntity.ok(new MypageResponse(Collections.singletonList(mypage))))
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/mypage/user")
+    public ApiResponse<?> findUserInfo(HttpServletRequest request) {
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token != null && jwtTokenProvider.validateToken(token)) {
+            Integer userId = jwtTokenProvider.getUserId(token);
+            return mypageService.findUserInfo(userId)
+                    .map(mypage -> ApiResponse.success(new MypageResponse(Collections.singletonList(mypage)),"User information retrieved successfully"))
+                    .orElseGet(() -> ApiResponse.error("User not found", ErrorType.MEMBER_NOT_FOUND));
+        } else {
+            return ApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
+        }
     }
 
     @GetMapping("/mypage/cart/{userId}")
