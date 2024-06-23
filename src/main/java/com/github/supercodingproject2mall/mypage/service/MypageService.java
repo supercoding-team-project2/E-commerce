@@ -19,14 +19,12 @@ public class MypageService {
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
 
-    public Optional<MypageUserInfo> findUserInfo(String userId){
-        Integer userIdInt = Integer.valueOf(userId);
-        return userRepository.findById(userIdInt).map(MypageMapper.INSTANCE::userEntityToMypage);
+    public Optional<MypageUserInfo> findUserInfo(Integer userId){
+        return userRepository.findById(userId).map(MypageMapper.INSTANCE::userEntityToMypage);
     }
 
-    public List<MypageCartItemsDto> getCartItemsForUser(String userId) {
-        Integer userIdInt = Integer.valueOf(userId);
-        List<Object[]> results = cartRepository.findCartDetailsByUserId(userIdInt);
+    public List<MypageCartItemsDto> getCartItemsForUser(Integer userId) {
+        List<Object[]> results = cartRepository.findCartDetailsByUserId(userId);
         return results.stream()
                 .map(CartItemMapper.INSTANCE::toDto)
                 .collect(Collectors.toList());
