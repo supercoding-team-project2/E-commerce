@@ -18,6 +18,13 @@ import java.util.Map;
 @EnableJpaRepositories(
         basePackages = {"com.github.supercodingproject2mall.auth.repository",
         "com.github.supercodingproject2mall.cart.repository",
+                "com.github.supercodingproject2mall.cartItem.repository",
+                "com.github.supercodingproject2mall.item.repository",
+                "com.github.supercodingproject2mall.itemOption.repository",
+                "com.github.supercodingproject2mall.optionValue.repository",
+                "com.github.supercodingproject2mall.cartOptionValue.repository",
+                "com.github.supercodingproject2mall.cartItemOption.repository",
+                "com.github.supercodingproject2mall.category.repository",
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
@@ -34,10 +41,15 @@ public class JpaConfig {
 
         em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity",
                 "com.github.supercodingproject2mall.cart.entity",
+                "com.github.supercodingproject2mall.cartItem.entity",
                 "com.github.supercodingproject2mall.category.entity",
                 "com.github.supercodingproject2mall.item.entity",
                 "com.github.supercodingproject2mall.itemOption.entity",
-                "com.github.supercodingproject2mall.order.entity"
+                "com.github.supercodingproject2mall.order.entity",
+                "com.github.supercodingproject2mall.cartItemOption.entity",
+                "com.github.supercodingproject2mall.cartOptionValue.entity",
+                "com.github.supercodingproject2mall.optionValue.entity",
+                "com.github.supercodingproject2mall.category.entity"
         );
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
