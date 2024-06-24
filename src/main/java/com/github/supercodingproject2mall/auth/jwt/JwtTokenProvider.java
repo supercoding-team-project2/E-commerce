@@ -1,7 +1,9 @@
 package com.github.supercodingproject2mall.auth.jwt;
 
+import com.github.supercodingproject2mall.auth.exception.ErrorType;
 import jakarta.servlet.http.HttpServletRequest;
 import io.jsonwebtoken.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,19 +16,14 @@ import org.springframework.http.HttpHeaders;
 import java.util.Base64;
 import java.util.Date;
 
+@Slf4j
 @Component
 public class JwtTokenProvider {
-
     private final String secretKey;
-    private final long tokenValidMillisecond;
     private final UserDetailsService userDetailsService;
 
-    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey,
-                            @Value("${spring.jwt.token-validity-in-seconds}") long tokenValidMillisecond,
-                            UserDetailsService userDetailsService)
-    {
+    public JwtTokenProvider(@Value("${spring.jwt.secret}") String secretKey, UserDetailsService userDetailsService) {
         this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-        this.tokenValidMillisecond = tokenValidMillisecond * 1000;
         this.userDetailsService = userDetailsService;
     }
 
@@ -34,21 +31,17 @@ public class JwtTokenProvider {
         return request.getHeader(HttpHeaders.AUTHORIZATION);
     }
 
-    public boolean validateToken(String jwtToken) {
+    public boolean validateToken(String accessToken) {
         try {
-            Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(jwtToken).getBody();
-            Date now = new Date();
-
-            return claims.getExpiration().after(now);
+            return isNotExpired(accessToken);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            System.out.println("잘못된 JWT 서명입니다.");
-        } catch (ExpiredJwtException e) {
-            System.out.println("만료된 JWT 서명입니다.");
+            log.error(ErrorType.INVALID_TOKEN_SIGNATURE.getMessage());
         } catch (UnsupportedJwtException e) {
-            System.out.println("지원되지 않는 JWT 토큰입니다.");
+            log.error(ErrorType.UNSUPPORTED_TOKEN.getMessage());
         } catch (IllegalArgumentException e) {
-            System.out.println("JWT 토큰이 잘못되었습니다.");
+            log.error(ErrorType.INVALID_TOKEN.getMessage());
         }
+
         return false;
     }
 
@@ -60,10 +53,10 @@ public class JwtTokenProvider {
         return new UsernamePasswordAuthenticationToken(userDetails, accessToken);
     }
 
-    // TODO: refreshToken 생성
-    public String createToken(String email, Integer id) {
+    public String createToken(String tokenType, String email, Integer id, Long expiredMs) {
         Claims claims = Jwts.claims()
                 .setSubject(email);
+        claims.put("tokenType", tokenType);
         claims.put("userId", id);
 
         Date now = new Date();
@@ -71,7 +64,7 @@ public class JwtTokenProvider {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + tokenValidMillisecond))
+                .setExpiration(new Date(now.getTime() + expiredMs))
                 .signWith(SignatureAlgorithm.HS512, secretKey)
                 .compact();
     }
@@ -84,7 +77,15 @@ public class JwtTokenProvider {
         }
     }
 
-    public Integer getUserId(String accessToken) {
-        return parseClaims(accessToken).get("userId", Integer.class);
+    public Integer getUserId(String jwtToken) {
+        return parseClaims(jwtToken).get("userId", Integer.class);
+    }
+
+    public String getCategory(String jwtToken) {
+        return parseClaims(jwtToken).get("category", String.class);
+    }
+
+    public Boolean isNotExpired(String jwtToken) {
+        return parseClaims(jwtToken).getExpiration().after(new Date());
     }
 }

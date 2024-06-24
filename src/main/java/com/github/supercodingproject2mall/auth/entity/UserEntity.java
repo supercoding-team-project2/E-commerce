@@ -1,8 +1,8 @@
 package com.github.supercodingproject2mall.auth.entity;
 
 
-import com.github.supercodingproject2mall.auth.entity.enums.Gender;
-import com.github.supercodingproject2mall.auth.entity.enums.UserStatus;
+import com.github.supercodingproject2mall.auth.enums.Gender;
+import com.github.supercodingproject2mall.auth.enums.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
