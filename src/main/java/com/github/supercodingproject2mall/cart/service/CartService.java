@@ -5,6 +5,7 @@ import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.cart.repository.CartRepository;
 import com.github.supercodingproject2mall.item.repository.ItemRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -15,10 +16,10 @@ import org.webjars.NotFoundException;
 @RequiredArgsConstructor
 public class CartService {
 
-    private final ItemRepository itemRepository;
     private final UserRepository userRepository;
     private final CartRepository cartRepository;
 
+    @Transactional
     public Integer findCart(Integer id) {
 
         //유저 조회
@@ -28,8 +29,6 @@ public class CartService {
         //유저의 카트가 있는지 없는지 조회 없으면 생성
         CartEntity cartEntity = cartRepository.findByUserId(id)
                 .orElseGet(()-> cartRepository.save(CartEntity.builder().user(userEntity).build()));
-
-        log.info("CartEntity - ID: {}, User: {}", cartEntity.getId(), cartEntity.getUser());
 
         //우저의 카트 아이디 반환
         Integer cartId = cartEntity.getId();
