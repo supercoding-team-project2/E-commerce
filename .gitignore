@@ -26,7 +26,6 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 application.yaml
-src/main/java/com/github/supercodingproject2mall/cart/
 src/main/java/com/github/supercodingproject2mall/category/
 src/main/java/com/github/supercodingproject2mall/item/
 src/main/java/com/github/supercodingproject2mall/itemOption/
