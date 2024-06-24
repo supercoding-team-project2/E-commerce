@@ -1,6 +1,6 @@
 package com.github.supercodingproject2mall.auth.service;
 
-import com.github.supercodingproject2mall.auth.dto.CustomUserDetails;
+import com.github.supercodingproject2mall.auth.userdetail.CustomUserDetails;
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
 import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
