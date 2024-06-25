@@ -76,10 +76,6 @@ public class CartItemService {
 
     @Transactional
     public void updateCart(UpdateCartRequest updateCartRequest) {
-//        private String cartItemId;
-//        private List<Integer> itemOptionId;
-//        private List<Integer> optionValueId;
-//        private Integer quantity;
 
         Integer cartItemId = Integer.valueOf(updateCartRequest.getCartItemId());
 
