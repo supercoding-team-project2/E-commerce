@@ -30,6 +30,7 @@ src/main/java/com/github/supercodingproject2mall/category/
 src/main/java/com/github/supercodingproject2mall/item/
 src/main/java/com/github/supercodingproject2mall/itemOption/
 src/main/java/com/github/supercodingproject2mall/order/
+src/main/java/com/github/supercodingproject2mall/optionValue/
 
 ### NetBeans ###
 /nbproject/private/
