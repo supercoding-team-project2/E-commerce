@@ -22,13 +22,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
 
         String jwtToken = jwtTokenProvider.resolveToken(request);
+        System.out.println("jwtToken = " + jwtToken);
 
-        if ( jwtToken != null && jwtTokenProvider.validateToken(jwtToken) ){
+        if(jwtToken != null && jwtTokenProvider.validateToken(jwtToken)) {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        if(!jwtTokenProvider.isNotExpired(jwtToken)) {
+        if(jwtToken != null && !jwtTokenProvider.isNotExpired(jwtToken)) {
             response.setStatus(HttpStatus.BAD_REQUEST.value());
         }
 
