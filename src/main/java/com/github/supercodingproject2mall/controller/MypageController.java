@@ -7,6 +7,10 @@ import com.github.supercodingproject2mall.mypage.dto.MypageResponse;
 import com.github.supercodingproject2mall.mypage.exception.ErrorType;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
 import com.github.supercodingproject2mall.order.dto.OrderHistoryDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +29,10 @@ public class MypageController {
 
     // 유저 정보 조회 api
     @GetMapping("/mypage/user")
+    @Operation(summary = "Retrieve user information", description = "Fetches user information based on JWT token.")
+    @ApiResponse(responseCode = "200", description = "User information retrieved successfully",
+            content = @Content(schema = @Schema(implementation = MypageResponse.class)))
+    @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> findUserInfo(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
@@ -38,6 +46,10 @@ public class MypageController {
     }
 
     @GetMapping("/mypage/cart")
+    @Operation(summary = "Get user's cart items", description = "Fetches cart items for the user identified by JWT token.")
+    @ApiResponse(responseCode = "200", description = "Cart items retrieved successfully",
+            content = @Content(schema = @Schema(implementation = MypageCartItemsDto.class)))
+    @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserCartItems(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)) {
@@ -53,6 +65,10 @@ public class MypageController {
     }
 
     @GetMapping("/mypage/order")
+    @Operation(summary = "Get user's order history", description = "Fetches order history for the user identified by JWT token.")
+    @ApiResponse(responseCode = "200", description = "Order history retrieved successfully",
+            content = @Content(schema = @Schema(implementation = OrderHistoryDto.class)))
+    @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserOrder(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
         if (token == null || !jwtTokenProvider.validateToken(token)) {
