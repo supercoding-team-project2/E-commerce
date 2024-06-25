@@ -25,6 +25,7 @@ import java.util.Map;
                 "com.github.supercodingproject2mall.cartOptionValue.repository",
                 "com.github.supercodingproject2mall.cartItemOption.repository",
                 "com.github.supercodingproject2mall.category.repository",
+                "com.github.supercodingproject2mall.order.repository"
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
