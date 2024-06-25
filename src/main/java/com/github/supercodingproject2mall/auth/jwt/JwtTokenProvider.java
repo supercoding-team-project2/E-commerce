@@ -28,7 +28,13 @@ public class JwtTokenProvider {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader(HttpHeaders.AUTHORIZATION);
+        String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+
+        return bearerToken;
     }
 
     public boolean validateToken(String accessToken) {
