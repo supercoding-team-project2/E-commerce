@@ -1,4 +1,4 @@
-package com.github.supercodingproject2mall.auth.userdetail;
+package com.github.supercodingproject2mall.auth.dto;
 
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
