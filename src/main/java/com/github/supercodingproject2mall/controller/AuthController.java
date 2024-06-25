@@ -5,11 +5,14 @@ import com.github.supercodingproject2mall.auth.dto.SignupDTO;
 import com.github.supercodingproject2mall.auth.response.LoginResponse;
 import com.github.supercodingproject2mall.auth.response.SignupResponse;
 import com.github.supercodingproject2mall.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -28,12 +31,12 @@ public class AuthController {
     }
 
     @PostMapping(value = "/login")
-    public LoginResponse login(@Valid @RequestBody LoginDTO loginDTO, BindingResult bindingResult) {
+    public LoginResponse login(@Valid @RequestBody LoginDTO loginDTO, BindingResult bindingResult, HttpServletResponse response) {
         if(bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             throw new IllegalArgumentException(errorMessage);
         }
 
-        return authService.login(loginDTO);
+        return authService.login(loginDTO, response);
     }
 }
