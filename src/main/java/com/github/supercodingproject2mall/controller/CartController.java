@@ -6,6 +6,7 @@ import com.github.supercodingproject2mall.cart.dto.CartResponse;
 import com.github.supercodingproject2mall.cart.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cart.service.CartService;
 import com.github.supercodingproject2mall.cartItem.service.CartItemService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +27,7 @@ public class CartController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping("/add")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> uploadCart(HttpServletRequest request, @RequestBody CartRequest cartRequest) {
         String token = jwtTokenProvider.resolveToken(request);
         if (token != null && jwtTokenProvider.validateToken(token)){
@@ -39,6 +41,7 @@ public class CartController {
     }
 
     @PutMapping("/update")
+    @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){
         String token = jwtTokenProvider.resolveToken(request);
         if(token != null && jwtTokenProvider.validateToken(token)){
