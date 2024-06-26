@@ -12,6 +12,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,20 +27,24 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping(value = "/signup")
-    public SignupResponse signup(@Valid @RequestBody SignupDTO signupDTO, BindingResult bindingResult) {
+    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupDTO signupDTO, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
-            throw new IllegalArgumentException(errorMessage);
+            SignupResponse signupResponse = new SignupResponse(errorMessage);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(signupResponse);
         }
 
         return authService.signup(signupDTO);
     }
 
     @PostMapping(value = "/login")
-    public LoginResponse login(@Valid @RequestBody LoginDTO loginDTO, BindingResult bindingResult, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginDTO loginDTO, BindingResult bindingResult, HttpServletResponse response) {
         if(bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
-            throw new IllegalArgumentException(errorMessage);
+            LoginResponse loginResponse = new LoginResponse(errorMessage);
+
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(loginResponse);
         }
 
         return authService.login(loginDTO, response);

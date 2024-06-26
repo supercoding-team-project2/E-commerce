@@ -18,6 +18,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -38,7 +39,11 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
 
-    public SignupResponse signup(SignupDTO signupDTO) {
+    public ResponseEntity<SignupResponse> signup(SignupDTO signupDTO) {
+
+        if(userRepository.findByEmail(signupDTO.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignupResponse(ErrorType.DUPLICATE_USER.getMessage(), signupDTO.getEmail()));
+        }
 
         UserEntity user = userRepository.findByEmail(signupDTO.getEmail())
                                         .orElseGet(() -> userRepository.save(UserEntity.builder()
@@ -48,10 +53,10 @@ public class AuthService {
                                                                        .phoneNum(signupDTO.getPhoneNum())
                                                                        .gender(Gender.valueOf(signupDTO.getGender())).build()));
 
-        return new SignupResponse("success", user.getEmail());
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SignupResponse("success", user.getEmail()));
     }
 
-    public LoginResponse login(LoginDTO loginDTO, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> login(LoginDTO loginDTO, HttpServletResponse response) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
 
@@ -72,7 +77,7 @@ public class AuthService {
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
-        return new LoginResponse("success", tokenDTO);
+        return ResponseEntity.ok(new LoginResponse("success", tokenDTO));
     }
 
     private Cookie createCookie(String key, String value) {
