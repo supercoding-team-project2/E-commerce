@@ -25,10 +25,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-src/main/java/com/github/supercodingproject2mall/cartItem/
-src/main/java/com/github/supercodingproject2mall/cartItemOption/
-src/main/java/com/github/supercodingproject2mall/cartOptionValue/
-src/main/java/com/github/supercodingproject2mall/optionValue/
 application.yaml
 src/main/java/com/github/supercodingproject2mall/category/
 src/main/java/com/github/supercodingproject2mall/item/
