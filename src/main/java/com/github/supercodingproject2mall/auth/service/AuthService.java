@@ -6,11 +6,14 @@ import com.github.supercodingproject2mall.auth.dto.TokenDTO;
 import com.github.supercodingproject2mall.auth.entity.RefreshEntity;
 import com.github.supercodingproject2mall.auth.enums.Gender;
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
+import com.github.supercodingproject2mall.auth.enums.UserStatus;
+import com.github.supercodingproject2mall.auth.exception.ErrorType;
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
 import com.github.supercodingproject2mall.auth.repository.RefreshRepository;
 import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.auth.response.LoginResponse;
 import com.github.supercodingproject2mall.auth.response.SignupResponse;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -88,5 +91,27 @@ public class AuthService {
                 .refresh(refresh)
                 .expiration(date.toString())
                 .build());
+    }
+
+    public void logout(String refreshToken) {
+        if(refreshToken == null) {
+            throw new JwtException(ErrorType.NULL_TOKEN.getMessage());
+        }
+
+        Boolean isExist = refreshRepository.existsByRefresh(refreshToken);
+        if(!isExist) {
+            throw new JwtException("리프레시토큰을 찾을 수 없습니다.");
+        }
+
+        refreshRepository.deleteByRefresh(refreshToken);
+    }
+
+    public void deleteUser(String accessToken) {
+        String email = jwtTokenProvider.parseClaims(accessToken).getSubject();
+
+        UserEntity foundUser = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("이메일에 해당하는 유저가 없습니다."));
+
+        userRepository.save(foundUser.toBuilder().status(UserStatus.DELETED).build());
     }
 }
