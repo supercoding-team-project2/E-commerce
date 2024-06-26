@@ -64,7 +64,6 @@ public class AuthService {
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
         
-        response.setHeader("access", accessToken);
         response.addCookie(createCookie("refresh", refreshToken));
         response.setStatus(HttpStatus.OK.value());
 
