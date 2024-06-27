@@ -11,7 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 public class CartRequest {
 
-    private Integer userId;
     private Integer itemId;
     private List<Integer> itemOptionId;
     private List<Integer> optionValueId;
