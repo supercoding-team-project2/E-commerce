@@ -25,7 +25,11 @@ import java.util.Map;
                 "com.github.supercodingproject2mall.cartOptionValue.repository",
                 "com.github.supercodingproject2mall.cartItemOption.repository",
                 "com.github.supercodingproject2mall.category.repository",
-                "com.github.supercodingproject2mall.order.repository"
+                "com.github.supercodingproject2mall.order.repository",
+                "com.github.supercodingproject2mall.orderItem.repository",
+                "com.github.supercodingproject2mall.orderAddress.repository",
+                "com.github.supercodingproject2mall.orderPayment.repository",
+                "com.github.supercodingproject2mall.sale.repository",
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
@@ -50,7 +54,11 @@ public class JpaConfig {
                 "com.github.supercodingproject2mall.cartItemOption.entity",
                 "com.github.supercodingproject2mall.cartOptionValue.entity",
                 "com.github.supercodingproject2mall.optionValue.entity",
-                "com.github.supercodingproject2mall.category.entity"
+                "com.github.supercodingproject2mall.category.entity",
+                "com.github.supercodingproject2mall.orderItem.entity",
+                "com.github.supercodingproject2mall.orderAddress.entity",
+                "com.github.supercodingproject2mall.orderPayment.entity",
+                "com.github.supercodingproject2mall.sale.entity"
         );
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

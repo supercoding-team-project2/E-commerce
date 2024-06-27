@@ -1,6 +1,7 @@
 package com.github.supercodingproject2mall.cartItem.service;
 
 import com.github.supercodingproject2mall.cart.dto.CartRequest;
+import com.github.supercodingproject2mall.cart.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.cart.repository.CartRepository;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
@@ -21,9 +22,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.relational.core.sql.In;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -38,23 +42,24 @@ public class CartItemService {
     private final CartItemOptionRepository cartItemOptionRepository;
     private final CartOptionValueRepository cartOptionValueRepository;
 
-
-    @Transactional
+    //TODO: 예외발생해도 cartItem Id 적용됨 해결해야됨
+    @Transactional(rollbackOn = Exception.class)
     public void addItemToCart(Integer userCartId, CartRequest cartRequest) {
 
-        //cartItemEntity형태로 바꿔주기
         CartItemEntity cartItemEntity = cartRequestToCartItemEntity(userCartId,cartRequest);
 
-        //cartItem에 저장
         cartItemRepository.save(cartItemEntity);
 
-        //cart_item_items_options null 아닐 경우에만 저장
-        //cart_item_option_values 저장
         if(cartRequest.getItemOptionId() != null){
 
             for (Integer itemOptionId : cartRequest.getItemOptionId()){
                 ItemOptionEntity itemOptionEntity = itemOptionRepository.findById(itemOptionId)
                         .orElseThrow(()-> new NotFoundException("해당 ID: "+itemOptionId+"의 아이템 옵션을 찾을 수 없습니다."));
+
+                if (!itemOptionEntity.getItem().getId().equals(cartRequest.getItemId())) {
+                    throw new IllegalArgumentException("해당 아이템의 옵션이 아닙니다.");
+                }
+
                 CartItemOptionEntity cartItemOptionEntity = cartRequestToCartItemOption(cartItemEntity,itemOptionEntity);
                 cartItemOptionRepository.save(cartItemOptionEntity);
             }
@@ -62,9 +67,45 @@ public class CartItemService {
             for (Integer optionValueId : cartRequest.getOptionValueId()){
                 OptionValueEntity optionValueEntity = optionValueRepository.findById(optionValueId)
                         .orElseThrow(()-> new NotFoundException("해당 ID: "+optionValueId+"의 아이템 옵션값을 찾을 수 없습니다."));
+
                 CartOptionValueEntity cartOptionValueEntity = cartRequestToCartOptionValue(cartItemEntity,optionValueEntity);
                 cartOptionValueRepository.save(cartOptionValueEntity);
             }
+        }
+    }
+
+    @Transactional
+    public void updateCart(UpdateCartRequest updateCartRequest) {
+
+        Integer cartItemId = Integer.valueOf(updateCartRequest.getCartItemId());
+
+        //cartItem 조회 by cartItemId
+        CartItemEntity cartItemEntity = cartItemRepository.findById(cartItemId)
+                .orElseThrow(()->new NotFoundException("해당 ID:"+updateCartRequest.getCartItemId()+"의 cartItem을 찾을 수 없습니다."));
+
+        //cartItemEntity 수량 수정
+        CartItemEntity updatedCartItemEntity = cartItemEntity.toBuilder()
+                .quantity(updateCartRequest.getQuantity())
+                .build();
+        cartItemRepository.save(updatedCartItemEntity);
+
+
+        //update 대상 cartOptionValue 조회
+        List<CartOptionValueEntity> cartOptionValueEntities = cartOptionValueRepository.findByCartItemId(cartItemId);
+        if (cartOptionValueEntities.isEmpty()) {
+            throw new NotFoundException("cart_item_id: " + cartItemId + "를 가진 cartOptionValue를 찾을 수 없습니다.");
+        }
+        // update 옵션 리스트로 저장
+        List<Integer> newOptionValueIds = updateCartRequest.getOptionValueId();
+        for(int i=0; i<newOptionValueIds.size(); i++){
+            CartOptionValueEntity cartOptionValueEntity = cartOptionValueEntities.get(i);
+            OptionValueEntity optionValueEntity = optionValueRepository.findById(newOptionValueIds.get(i))
+                    .orElseThrow(()->new NotFoundException("수정할 아이템 옵션값을 찾을 수 없습니다."));
+            CartOptionValueEntity updatedCartOptionValueEntity = cartOptionValueEntity.toBuilder()
+                    .optionValue(optionValueEntity)
+                    .build();
+            //cart_item_items_options에 수정된 값 저장
+            cartOptionValueRepository.save(updatedCartOptionValueEntity);
         }
     }
 
@@ -97,4 +138,5 @@ public class CartItemService {
                 .quantity(cartRequest.getQuantity())
                 .build();
     }
+
 }
