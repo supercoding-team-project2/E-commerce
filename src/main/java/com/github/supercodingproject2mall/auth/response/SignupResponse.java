@@ -8,4 +8,8 @@ import lombok.Getter;
 public class SignupResponse {
     private String message;
     private String email;
+
+    public SignupResponse(String message) {
+        this.message = message;
+    }
 }
