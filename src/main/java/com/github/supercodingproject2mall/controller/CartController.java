@@ -14,11 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Enumeration;
-
 @Slf4j
 @RestController
-@RequestMapping("/api/cart")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class CartController {
 
@@ -26,7 +24,7 @@ public class CartController {
     private final CartItemService cartItemService;
     private final JwtTokenProvider jwtTokenProvider;
 
-    @PostMapping("/add")
+    @PostMapping("/cart/add")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> uploadCart(HttpServletRequest request, @RequestBody CartRequest cartRequest) {
         String token = jwtTokenProvider.resolveToken(request);
@@ -40,7 +38,7 @@ public class CartController {
         return ResponseEntity.ok(new CartResponse("카트 담기 완료"));
     }
 
-    @PutMapping("/update")
+    @PutMapping("/cart/update")
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){
         String token = jwtTokenProvider.resolveToken(request);
@@ -51,4 +49,5 @@ public class CartController {
         }
         return ResponseEntity.ok(new CartResponse("카트 수정 완료"));
     }
+
 }
