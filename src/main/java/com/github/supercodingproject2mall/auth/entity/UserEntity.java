@@ -13,7 +13,7 @@ import org.hibernate.annotations.DynamicInsert;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-@Builder
+@Builder(toBuilder = true)
 @DynamicInsert
 public class UserEntity {
 
@@ -46,7 +46,7 @@ public class UserEntity {
     @Column(name = "shopping_pay", columnDefinition = "INTEGER DEFAULT 0")
     private Integer shoppingPay;
 
-    @Column(columnDefinition = "ENUM('ACTIVATED', 'DELETED') DEFAULT 'ACTIVATED'")
+    @Column(columnDefinition = "ENUM('ACTIVE', 'DELETED') DEFAULT 'ACTIVE'")
     @Enumerated(EnumType.STRING)
     private UserStatus status;
 }

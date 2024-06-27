@@ -10,6 +10,8 @@ public enum ErrorType {
     INVALID_TOKEN("잘못된 JWT 토큰입니다."),
     EXPIRED_TOKEN("유효기간이 지난 토큰입니다"),
 
+    DUPLICATE_USER("이미 존재하는 회원입니다."),
+
     SYSTEM_ERROR;
 
     private String message;
