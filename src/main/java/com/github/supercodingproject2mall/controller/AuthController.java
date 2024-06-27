@@ -51,7 +51,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/logout")
-    public void logout(HttpServletRequest request) {
+    public void logout(HttpServletRequest request, HttpServletResponse response) {
         String refreshToken = null;
 
         Cookie[] cookies = request.getCookies();
@@ -62,9 +62,10 @@ public class AuthController {
             }
         }
 
-        log.info("refreshToken = " + refreshToken);
+        Cookie cookie = authService.logout(refreshToken);
 
-        authService.logout(refreshToken);
+        response.addCookie(cookie);
+        response.setStatus(HttpServletResponse.SC_OK);
     }
 
     // TODO: 회원탈퇴

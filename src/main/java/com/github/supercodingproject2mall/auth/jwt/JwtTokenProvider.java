@@ -1,6 +1,8 @@
 package com.github.supercodingproject2mall.auth.jwt;
 
+import com.github.supercodingproject2mall.auth.enums.ResponseType;
 import com.github.supercodingproject2mall.auth.exception.ErrorType;
+import com.github.supercodingproject2mall.auth.response.ValidateTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
@@ -30,25 +32,32 @@ public class JwtTokenProvider {
     public String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
 
-        if(bearerToken != null && bearerToken.startsWith("Bearer ")) {
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
             return bearerToken.substring(7);
         }
 
         return bearerToken;
     }
 
-    public boolean validateToken(String accessToken) {
-        try {
-            return isNotExpired(accessToken);
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            log.error(ErrorType.INVALID_TOKEN_SIGNATURE.getMessage());
-        } catch (UnsupportedJwtException e) {
-            log.error(ErrorType.UNSUPPORTED_TOKEN.getMessage());
-        } catch (IllegalArgumentException e) {
-            log.error(ErrorType.INVALID_TOKEN.getMessage());
+    public ValidateTokenResponse validateToken(String accessToken) {
+        Boolean isNotExpired = isNotExpired(accessToken);
+        Claims claims = null;
+
+        if (isNotExpired) {
+            try {
+                claims = parseClaims(accessToken);
+            } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
+                return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.INVALID_TOKEN_SIGNATURE.getMessage());
+            } catch (UnsupportedJwtException e) {
+                return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.UNSUPPORTED_TOKEN.getMessage());
+            } catch (IllegalArgumentException e) {
+                return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.INVALID_TOKEN.getMessage());
+            }
+
+            return new ValidateTokenResponse(ResponseType.SUCCESS, claims);
         }
 
-        return false;
+        return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.EXPIRED_TOKEN.getMessage());
     }
 
     public Authentication getAuthentication(String accessToken) {
@@ -85,6 +94,10 @@ public class JwtTokenProvider {
 
     public Integer getUserId(String jwtToken) {
         return parseClaims(jwtToken).get("userId", Integer.class);
+    }
+
+    public String getEmail(String jwtToken) {
+        return parseClaims(jwtToken).getSubject();
     }
 
     public String getCategory(String jwtToken) {
