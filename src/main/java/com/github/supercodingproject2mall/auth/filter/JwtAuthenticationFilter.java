@@ -31,12 +31,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String jwtToken = jwtTokenProvider.resolveToken(request);
         log.info("jwtToken = " + jwtToken);
 
-        if (jwtToken != null && jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
+        if (jwtToken == null) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.getWriter().write("token is null");
+
+            return;
+        }
+
+        if (jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
 
-        if (jwtToken != null && !jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
+        if (!jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid or expired token");
 
