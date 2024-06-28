@@ -20,12 +20,12 @@ public class ItemSizeEntity {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     private ItemEntity itemId;
 
-    @Column(name = "option_size")
+    @Column(name = "option_size", length = 10, nullable = false)
     private String optionSize;
 
-    @Column(name = "stock")
+    @Column(name = "stock", nullable = false)
     private Integer stock;
 }
