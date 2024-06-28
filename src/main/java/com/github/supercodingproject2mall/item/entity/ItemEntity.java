@@ -2,8 +2,6 @@ package com.github.supercodingproject2mall.item.entity;
 
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
-import com.github.supercodingproject2mall.category.entity.CategoryEntity;
-import com.github.supercodingproject2mall.itemOption.entity.ItemOptionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,29 +17,39 @@ import java.util.Set;
 @Table(name = "items")
 @ToString
 public class ItemEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
+
+    @Column(name = "description", length = 1000, nullable = false)
     private String description;
-    private BigDecimal price;
-    private Integer stock;
-    private String imageUrl;
+
+    @Column(name="price", nullable = false)
+    private Integer price;
+
+    @Column(name = "total_stock", nullable = false)
+    private Integer totalStock;
+
+    @Column(name = "listed_date", nullable = false)
     private LocalDate listedDate;
+
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "seller_id", nullable = false)
     private UserEntity seller;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private CategoryEntity category;
+    @Column(name = "category_gender", length = 10,  nullable = false)
+    private String categoryGender;
+
+    @Column(name = "category_kind", length = 10, nullable = false)
+    private String categoryKind;
 
     @OneToMany(mappedBy = "item")
     private Set<CartItemEntity> cartItems;
-
-    @OneToMany(mappedBy = "item")
-    private Set<ItemOptionEntity> itemOptions;
 }
