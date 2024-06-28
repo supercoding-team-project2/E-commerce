@@ -1,6 +1,6 @@
 package com.github.supercodingproject2mall.cartItem.entity;
 
-import com.github.supercodingproject2mall.auth.entity.UserEntity;
+import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import jakarta.persistence.*;
@@ -30,4 +30,7 @@ public class CartItemEntity {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_size_id", nullable = false)
+    private ItemSizeEntity itemSize;
 }
