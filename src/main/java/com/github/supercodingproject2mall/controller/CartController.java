@@ -5,6 +5,8 @@ import com.github.supercodingproject2mall.cart.dto.CartRequest;
 import com.github.supercodingproject2mall.cart.dto.CartResponse;
 import com.github.supercodingproject2mall.cart.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cart.service.CartService;
+import com.github.supercodingproject2mall.cartItem.dto.CartItemResponse;
+import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
 import com.github.supercodingproject2mall.cartItem.service.CartItemService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,15 +38,22 @@ public class CartController {
         return ResponseEntity.ok(new CartResponse("성공적으로 장바구니에 담겼습니다."));
     }
 
-
-
-    @PutMapping("/cart/update")
+    @GetMapping("/cart")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){
+    public ResponseEntity<CartItemResponse> getCart(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-            cartItemService.updateCart(updateCartRequest);
-
-        return ResponseEntity.ok(new CartResponse("카트 수정 완료"));
+        Integer userId = jwtTokenProvider.getUserId(token);
+        List<GetCartItem> getCartItems = cartItemService.getUserCart(userId);
+        return ResponseEntity.ok(new CartItemResponse(getCartItems));
     }
+
+//    @PutMapping("/cart/update")
+//    @SecurityRequirement(name = "Bearer Authentication")
+//    public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){
+//        String token = jwtTokenProvider.resolveToken(request);
+//            cartItemService.updateCart(updateCartRequest);
+//
+//        return ResponseEntity.ok(new CartResponse("카트 수정 완료"));
+//    }
 
 }

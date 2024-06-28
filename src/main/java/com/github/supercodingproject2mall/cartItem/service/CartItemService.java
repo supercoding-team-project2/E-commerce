@@ -1,11 +1,15 @@
 package com.github.supercodingproject2mall.cartItem.service;
 
+import com.github.supercodingproject2mall.auth.entity.UserEntity;
 import com.github.supercodingproject2mall.cart.dto.CartRequest;
 import com.github.supercodingproject2mall.cart.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.cart.repository.CartRepository;
+import com.github.supercodingproject2mall.cartItem.dto.CartItemResponse;
+import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
 import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
+import com.github.supercodingproject2mall.img.repository.ImgRepository;
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import com.github.supercodingproject2mall.item.repository.ItemRepository;
 import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
@@ -15,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,11 +31,41 @@ public class CartItemService {
     private final CartRepository cartRepository;
     private final ItemRepository itemRepository;
     private final ItemSizeRepository itemSizeRepository;
+    private final ImgRepository imgRepository;
 
     public void addItemToCart(Integer userCartId, CartRequest cartRequest) {
 
         CartItemEntity cartItemEntity = cartRequestToCartItemEntity(userCartId,cartRequest);
         cartItemRepository.save(cartItemEntity);
+    }
+
+    public List<GetCartItem> getUserCart(Integer userId){
+        CartEntity cartEntity = cartRepository.findByUserId(userId)
+                .orElse(null);
+        if(cartEntity == null){
+            return new ArrayList<>();
+        }
+        List<CartItemEntity> cartItemEntities = cartItemRepository.findByCartId(cartEntity.getId());
+        List<GetCartItem> cartItems = new ArrayList<>();
+        for(CartItemEntity cartItemEntity : cartItemEntities){
+            String url = imgRepository.findUrlByItemId(cartItemEntity.getItem().getId());
+            Integer totalPrice = cartItemEntity.getItem().getPrice() * cartItemEntity.getQuantity();
+            List<String> optionSize = itemSizeRepository.findOptionSizeByItemId(cartItemEntity.getItem().getId());
+
+            GetCartItem getCartItem = GetCartItem.builder()
+                    .cartItemId(cartItemEntity.getId())
+                    .itemUrl(url)
+                    .itemName(cartItemEntity.getItem().getName())
+                    .itemSize(cartItemEntity.getItemSize().getOptionSize())
+                    .quantity(cartItemEntity.getQuantity())
+                    .totalPrice(totalPrice)
+                    .itemPrice(cartItemEntity.getItem().getPrice())
+                    .optionSize(optionSize)
+                    .build();
+
+            cartItems.add(getCartItem);
+        }
+        return cartItems;
     }
 
     @Transactional
