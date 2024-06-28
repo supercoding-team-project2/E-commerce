@@ -17,38 +17,39 @@ import java.util.Set;
 @Table(name = "items")
 @ToString
 public class ItemEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name", length = 50)
+    @Column(name = "name", length = 50, nullable = false)
     private String name;
-    @Column(name = "name", length = 1000)
+
+    @Column(name = "description", length = 1000, nullable = false)
     private String description;
 
-    @Column(name="price")
+    @Column(name="price", nullable = false)
     private Integer price;
 
-    @Column(name = "stock_stock")
-    private Integer stock;
+    @Column(name = "total_stock", nullable = false)
+    private Integer totalStock;
 
-    @Column(name = "listed_date")
+    @Column(name = "listed_date", nullable = false)
     private LocalDate listedDate;
 
-    @Column(name = "category_gender")
+    @Column(name = "end_date", nullable = false)
     private LocalDate endDate;
 
     @ManyToOne
-    @JoinColumn(name = "seller_id")
+    @JoinColumn(name = "seller_id", nullable = false)
     private UserEntity seller;
 
-    @Column(name = "category_gender")
+    @Column(name = "category_gender", length = 10,  nullable = false)
     private String categoryGender;
 
-    @Column(name = "category_kind")
+    @Column(name = "category_kind", length = 10, nullable = false)
     private String categoryKind;
 
     @OneToMany(mappedBy = "item")
     private Set<CartItemEntity> cartItems;
-
 }
