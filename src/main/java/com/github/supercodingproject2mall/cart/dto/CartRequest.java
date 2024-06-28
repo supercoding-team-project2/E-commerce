@@ -12,7 +12,6 @@ import java.util.List;
 public class CartRequest {
 
     private Integer itemId;
-    private List<Integer> itemOptionId;
-    private List<Integer> optionValueId;
+    private String size;
     private Integer quantity;
 }

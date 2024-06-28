@@ -31,9 +31,10 @@ public class CartController {
             Integer userId = jwtTokenProvider.getUserId(token);
             Integer userCartId = cartService.findCart(userId);
             cartItemService.addItemToCart(userCartId,cartRequest);
-
-        return ResponseEntity.ok(new CartResponse("카트 담기 완료"));
+        return ResponseEntity.ok(new CartResponse("성공적으로 장바구니에 담겼습니다."));
     }
+
+
 
     @PutMapping("/cart/update")
     @SecurityRequirement(name = "Bearer Authentication")

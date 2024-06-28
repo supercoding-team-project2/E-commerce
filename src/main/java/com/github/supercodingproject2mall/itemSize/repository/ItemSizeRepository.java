@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ItemSizeRepository extends JpaRepository<ItemSizeEntity, Integer> {
+        ItemSizeEntity findByItemIdAndOptionSize(Integer itemId, String optionSize);
 }
