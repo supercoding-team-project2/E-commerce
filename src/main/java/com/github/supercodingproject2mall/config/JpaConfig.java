@@ -20,16 +20,10 @@ import java.util.Map;
         "com.github.supercodingproject2mall.cart.repository",
                 "com.github.supercodingproject2mall.cartItem.repository",
                 "com.github.supercodingproject2mall.item.repository",
-                "com.github.supercodingproject2mall.itemOption.repository",
-                "com.github.supercodingproject2mall.optionValue.repository",
-                "com.github.supercodingproject2mall.cartOptionValue.repository",
-                "com.github.supercodingproject2mall.cartItemOption.repository",
-                "com.github.supercodingproject2mall.category.repository",
                 "com.github.supercodingproject2mall.order.repository",
                 "com.github.supercodingproject2mall.orderItem.repository",
-                "com.github.supercodingproject2mall.orderAddress.repository",
-                "com.github.supercodingproject2mall.orderPayment.repository",
-                "com.github.supercodingproject2mall.sale.repository",
+                "com.github.supercodingproject2mall.itemSize.repository",
+                "com.github.supercodingproject2mall.img.repository",
         },
         entityManagerFactoryRef = "entityManagerFactoryBean1"
 )
@@ -47,18 +41,11 @@ public class JpaConfig {
         em.setPackagesToScan("com.github.supercodingproject2mall.auth.entity",
                 "com.github.supercodingproject2mall.cart.entity",
                 "com.github.supercodingproject2mall.cartItem.entity",
-                "com.github.supercodingproject2mall.category.entity",
                 "com.github.supercodingproject2mall.item.entity",
-                "com.github.supercodingproject2mall.itemOption.entity",
                 "com.github.supercodingproject2mall.order.entity",
-                "com.github.supercodingproject2mall.cartItemOption.entity",
-                "com.github.supercodingproject2mall.cartOptionValue.entity",
-                "com.github.supercodingproject2mall.optionValue.entity",
-                "com.github.supercodingproject2mall.category.entity",
                 "com.github.supercodingproject2mall.orderItem.entity",
-                "com.github.supercodingproject2mall.orderAddress.entity",
-                "com.github.supercodingproject2mall.orderPayment.entity",
-                "com.github.supercodingproject2mall.sale.entity"
+                "com.github.supercodingproject2mall.img.entity",
+                "com.github.supercodingproject2mall.itemSize.entity"
         );
 
         JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();

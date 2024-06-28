@@ -29,6 +29,6 @@ public class OrderEntity {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    @Column(name = "order_email", length = 100)
-    private String orderEmail;
+    @Column(name = "order_number", length = 100)
+    private Integer orderNumber;
 }

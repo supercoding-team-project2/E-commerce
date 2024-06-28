@@ -42,7 +42,7 @@ public class CartItemService {
     private final CartItemOptionRepository cartItemOptionRepository;
     private final CartOptionValueRepository cartOptionValueRepository;
 
-    //TODO: 예외발생해도 cartItem Id 적용됨 해결해야됨
+    //TODO: transactional했는데 예외발생해도 cartItem Id 적용됨 해결해야됨
     @Transactional(rollbackOn = Exception.class)
     public void addItemToCart(Integer userCartId, CartRequest cartRequest) {
 

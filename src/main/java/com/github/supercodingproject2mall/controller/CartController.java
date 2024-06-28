@@ -28,13 +28,10 @@ public class CartController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> uploadCart(HttpServletRequest request, @RequestBody CartRequest cartRequest) {
         String token = jwtTokenProvider.resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)){
             Integer userId = jwtTokenProvider.getUserId(token);
             Integer userCartId = cartService.findCart(userId);
             cartItemService.addItemToCart(userCartId,cartRequest);
-        }else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CartResponse("Token이 유효하지 않거나 찾을 수 없습니다."));
-        }
+
         return ResponseEntity.ok(new CartResponse("카트 담기 완료"));
     }
 
@@ -42,11 +39,8 @@ public class CartController {
     @SecurityRequirement(name = "Bearer Authentication")
     public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){
         String token = jwtTokenProvider.resolveToken(request);
-        if(token != null && jwtTokenProvider.validateToken(token)){
             cartItemService.updateCart(updateCartRequest);
-        }else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new CartResponse("Token이 유효하지 않거나 찾을 수 없습니다."));
-        }
+
         return ResponseEntity.ok(new CartResponse("카트 수정 완료"));
     }
 
