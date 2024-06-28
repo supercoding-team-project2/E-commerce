@@ -31,8 +31,8 @@ public class ItemEntity {
     @Column(name="price", nullable = false)
     private Integer price;
 
-    @Column(name = "total_stock", nullable = false)
-    private Integer totalStock;
+    @Column(name = "total_stock")
+    private Integer stock;
 
     @Column(name = "listed_date", nullable = false)
     private LocalDate listedDate;
