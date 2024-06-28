@@ -1,44 +1,39 @@
 package com.github.supercodingproject2mall.mypage.service;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import jakarta.annotation.PostConstruct;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class StorageService {
-    private AmazonS3 s3Client;
-    @Value("${cloud.aws.region.static}")
-    private String region;
+    private final AmazonS3Client amazonS3Client;
+
     @Value("${cloud.aws.s3.bucket}")
     private String bucket;
-
-    @PostConstruct
-    public void init() {
-        this.s3Client = AmazonS3ClientBuilder.standard()
-                .withRegion(region)
-                .build();
-    }
+    @Value("${cloud.aws.region.static}")
+    private String region;
     public String uploadFile(MultipartFile file) throws IOException {
-        String bucketName = bucket;
-        String fileName = UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
-
-        try (InputStream inputStream = file.getInputStream()) {
-            ObjectMetadata metadata = new ObjectMetadata();
-            metadata.setContentLength(file.getSize());
-            metadata.setContentType(file.getContentType());
-
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, inputStream, metadata));
-            return s3Client.getUrl(bucketName, fileName).toString();
-        }
+        String fileName = generateFileName(file);
+        amazonS3Client.putObject(bucket, fileName, file.getInputStream(),getObjectMetadata(file));
+        return generateFileURL(fileName);
+    }
+    private ObjectMetadata getObjectMetadata(MultipartFile file) {
+        ObjectMetadata objectMetadata = new ObjectMetadata();
+        objectMetadata.setContentType(file.getContentType());
+        objectMetadata.setContentLength(file.getSize());
+        return objectMetadata;
+    }
+    private String generateFileName(MultipartFile file) {
+        return UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+    }
+    private String generateFileURL(String fileName) {
+        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucket, region, fileName);
     }
 }
