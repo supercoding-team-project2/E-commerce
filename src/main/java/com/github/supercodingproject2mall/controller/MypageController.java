@@ -37,14 +37,10 @@ public class MypageController {
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> findUserInfo(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
             Integer userId = jwtTokenProvider.getUserId(token);
             return mypageService.findUserInfo(userId)
                     .map(mypage -> MypageApiResponse.success(new MypageResponse(Collections.singletonList(mypage)), "User information retrieved successfully"))
                     .orElseGet(() -> MypageApiResponse.error("User not found", ErrorType.MEMBER_NOT_FOUND));
-        } else {
-            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
-        }
     }
 
     @GetMapping("/mypage/cart")
@@ -54,16 +50,12 @@ public class MypageController {
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserCartItems(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
-        if (token != null && jwtTokenProvider.validateToken(token)) {
             Integer userId = jwtTokenProvider.getUserId(token);
             List<MypageCartItemsDto> cartItems = mypageService.getCartItemsForUser(userId);
             if (cartItems.isEmpty()) {
                 return MypageApiResponse.error("No cart items found", ErrorType.NOTIFICATION_NOT_FOUND);
             }
             return MypageApiResponse.success(cartItems, "Cart items retrieved successfully");
-        } else {
-            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
-        }
     }
 
     @GetMapping("/mypage/order")
@@ -73,9 +65,6 @@ public class MypageController {
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserOrder(HttpServletRequest request){
         String token = jwtTokenProvider.resolveToken(request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
-        }
         Integer userId = jwtTokenProvider.getUserId(token);
         List<OrderHistoryDto> orderHistory = mypageService.getOrderHistoryForUser(userId);
         if (orderHistory.isEmpty()){
@@ -87,9 +76,6 @@ public class MypageController {
     @PutMapping("/mypage/user")
     public MypageApiResponse<?> updateUserInfo(HttpServletRequest request , @ModelAttribute MypageUserInfoUpdateDto updateDto){
         String token = jwtTokenProvider.resolveToken(request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
-        }
         Integer userId = jwtTokenProvider.getUserId(token);
         MultipartFile profileImage = updateDto.getProfileImage();
         String imageUrl = null;
@@ -108,9 +94,6 @@ public class MypageController {
     @PutMapping("/mypage/recharge")
     public MypageApiResponse<?> reChargeShoppingPay(HttpServletRequest request , @RequestBody MypageRechargeShoppingPay rechargeShoppingPay){
         String token = jwtTokenProvider.resolveToken(request);
-        if (token == null || !jwtTokenProvider.validateToken(token)) {
-            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
-        }
         Integer userId = jwtTokenProvider.getUserId(token);
         try {
             MypageUserInfo updateUserInfo = mypageService.rechargeShoppingPay(userId , rechargeShoppingPay);
