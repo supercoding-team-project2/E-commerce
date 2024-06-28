@@ -44,10 +44,10 @@ public class ItemEntity {
     @JoinColumn(name = "seller_id", nullable = false)
     private UserEntity seller;
 
-    @Column(name = "category_gender", nullable = false)
+    @Column(name = "category_gender", length = 10,  nullable = false)
     private String categoryGender;
 
-    @Column(name = "category_kind", nullable = false)
+    @Column(name = "category_kind", length = 10, nullable = false)
     private String categoryKind;
 
     @OneToMany(mappedBy = "item")

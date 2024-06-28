@@ -23,7 +23,7 @@ public class ItemSizeEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private ItemEntity itemId;
 
-    @Column(name = "option_size", nullable = false)
+    @Column(name = "option_size", length = 10, nullable = false)
     private String optionSize;
 
     @Column(name = "stock", nullable = false)
