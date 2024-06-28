@@ -104,4 +104,19 @@ public class MypageController {
             return MypageApiResponse.fail("S3 or database fileUpload fail",ErrorType.SYSTEM_ERROR);
         }
     }
+
+    @PutMapping("/mypage/recharge")
+    public MypageApiResponse<?> reChargeShoppingPay(HttpServletRequest request , @RequestBody MypageRechargeShoppingPay rechargeShoppingPay){
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
+            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
+        }
+        Integer userId = jwtTokenProvider.getUserId(token);
+        try {
+            MypageUserInfo updateUserInfo = mypageService.rechargeShoppingPay(userId , rechargeShoppingPay);
+            return MypageApiResponse.success(updateUserInfo,"페이 충전이 성공적으로 완료되었습니다!") ;
+        }catch (IllegalArgumentException e){
+            return MypageApiResponse.fail("User not found", ErrorType.MEMBER_NOT_FOUND);
+        }
+    }
 }
