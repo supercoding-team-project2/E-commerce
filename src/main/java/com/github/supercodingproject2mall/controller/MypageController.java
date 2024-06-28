@@ -1,11 +1,10 @@
 package com.github.supercodingproject2mall.controller;
 
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
-import com.github.supercodingproject2mall.mypage.dto.MypageApiResponse;
-import com.github.supercodingproject2mall.mypage.dto.MypageCartItemsDto;
-import com.github.supercodingproject2mall.mypage.dto.MypageResponse;
+import com.github.supercodingproject2mall.mypage.dto.*;
 import com.github.supercodingproject2mall.mypage.exception.ErrorType;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
+import com.github.supercodingproject2mall.mypage.service.StorageService;
 import com.github.supercodingproject2mall.order.dto.OrderHistoryDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,10 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
@@ -28,6 +27,7 @@ import java.util.List;
 public class MypageController {
     private final MypageService mypageService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final StorageService storageService;
 
     // 유저 정보 조회 api
     @GetMapping("/mypage/user")
@@ -82,5 +82,26 @@ public class MypageController {
             return MypageApiResponse.error("order history not found", ErrorType.NOTIFICATION_NOT_FOUND);
         }
         return MypageApiResponse.success(orderHistory, "order history retrieved successfully");
+    }
+
+    @PutMapping("/mypage/user")
+    public MypageApiResponse<?> updateUserInfo(HttpServletRequest request , @ModelAttribute MypageUserInfoUpdateDto updateDto){
+        String token = jwtTokenProvider.resolveToken(request);
+        if (token == null || !jwtTokenProvider.validateToken(token)) {
+            return MypageApiResponse.fail("Invalid or expired token", ErrorType.AUTHENTICATION_ERROR);
+        }
+        Integer userId = jwtTokenProvider.getUserId(token);
+        MultipartFile profileImage = updateDto.getProfileImage();
+        String imageUrl = null;
+        try {
+            if (profileImage != null && !profileImage.isEmpty()) {
+                imageUrl = storageService.uploadFile(profileImage);
+            }
+            MypageUserInfo updateUserInfo = mypageService.updateUserInfo(userId , updateDto , imageUrl);
+            return MypageApiResponse.success(updateUserInfo,"프로필이 성공적으로 업데이트되었습니다!") ;
+
+        } catch (IOException e) {
+            return MypageApiResponse.fail("S3 or database fileUpload fail",ErrorType.SYSTEM_ERROR);
+        }
     }
 }
