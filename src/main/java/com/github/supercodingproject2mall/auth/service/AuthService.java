@@ -6,6 +6,7 @@ import com.github.supercodingproject2mall.auth.dto.TokenDTO;
 import com.github.supercodingproject2mall.auth.entity.RefreshEntity;
 import com.github.supercodingproject2mall.auth.enums.Gender;
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
+import com.github.supercodingproject2mall.auth.enums.ResponseType;
 import com.github.supercodingproject2mall.auth.enums.UserStatus;
 import com.github.supercodingproject2mall.auth.exception.ErrorType;
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
@@ -13,10 +14,15 @@ import com.github.supercodingproject2mall.auth.repository.RefreshRepository;
 import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.auth.response.LoginResponse;
 import com.github.supercodingproject2mall.auth.response.SignupResponse;
+import com.github.supercodingproject2mall.cart.service.CartService;
+import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
+import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
+import com.github.supercodingproject2mall.cartItem.service.CartItemService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +34,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -38,6 +46,8 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CartService cartService;
+    private final CartItemRepository cartItemRepository;
 
     public ResponseEntity<SignupResponse> signup(SignupDTO signupDTO) {
 
@@ -68,7 +78,6 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("이메일에 해당하는 유저가 없습니다: " + loginDTO.getEmail()));
 
         String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L); // 10분
-//        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L); // 10분
         String refreshToken = jwtTokenProvider.createToken("refresh", user.getEmail(), user.getId(), 86400000L);
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
@@ -78,7 +87,16 @@ public class AuthService {
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
-        return ResponseEntity.ok(new LoginResponse("success", tokenDTO));
+        // 1. 유저아이디로 카트아이디 가져오기
+        Integer cartId = cartService.findCart(user.getId());
+        log.info("cartId = " + cartId);
+
+        // 2. 카트아이디로 List<카트아이템> 가져오기
+//        List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
+//        log.info("cartItemList.size() = " + cartItemList.size());
+
+        // 3. List<카트아이템>.size() 리스폰스에 담기
+        return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, 1));
     }
 
     private Cookie createCookie(String key, String value) {
