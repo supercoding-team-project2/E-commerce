@@ -17,7 +17,6 @@ import com.github.supercodingproject2mall.auth.response.SignupResponse;
 import com.github.supercodingproject2mall.cart.service.CartService;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
 import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
-import com.github.supercodingproject2mall.cartItem.service.CartItemService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,12 +57,13 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(signupDTO.getEmail())
                                         .orElseGet(() -> userRepository.save(UserEntity.builder()
                                                                        .email(signupDTO.getEmail())
+                                                                       .name(signupDTO.getName())
                                                                        .password(passwordEncoder.encode(signupDTO.getPassword()))
                                                                        .address(signupDTO.getAddress())
                                                                        .phoneNum(signupDTO.getPhoneNum())
                                                                        .gender(Gender.valueOf(signupDTO.getGender())).build()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SignupResponse("success", user.getEmail()));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SignupResponse(ResponseType.SUCCESS.toString(), user.getEmail()));
     }
 
     public ResponseEntity<LoginResponse> login(LoginDTO loginDTO, HttpServletResponse response) {
@@ -87,16 +87,11 @@ public class AuthService {
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
-        // 1. 유저아이디로 카트아이디 가져오기
         Integer cartId = cartService.findCart(user.getId());
-        log.info("cartId = " + cartId);
+        List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
+        int cartItemCount = cartItemList.size();
 
-        // 2. 카트아이디로 List<카트아이템> 가져오기
-//        List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
-//        log.info("cartItemList.size() = " + cartItemList.size());
-
-        // 3. List<카트아이템>.size() 리스폰스에 담기
-        return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, 1));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, cartItemCount));
     }
 
     private Cookie createCookie(String key, String value) {
