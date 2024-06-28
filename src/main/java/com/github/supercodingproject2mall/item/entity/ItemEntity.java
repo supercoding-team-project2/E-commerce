@@ -23,19 +23,20 @@ public class ItemEntity {
 
     @Column(name = "name", length = 50)
     private String name;
-    @Column(name = "name", length = 1000)
+
+    @Column(name = "description", length = 1000)
     private String description;
 
     @Column(name="price")
     private Integer price;
 
-    @Column(name = "stock_stock")
+    @Column(name = "total_stock")
     private Integer stock;
 
     @Column(name = "listed_date")
     private LocalDate listedDate;
 
-    @Column(name = "category_gender")
+    @Column(name = "end_date")
     private LocalDate endDate;
 
     @ManyToOne

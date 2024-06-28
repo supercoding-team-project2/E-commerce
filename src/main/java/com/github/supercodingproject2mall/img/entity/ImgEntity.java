@@ -15,7 +15,7 @@ public class ImgEntity {
     @Id @Column(name = "id") @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "item_id")
+    @JoinColumn(name = "item_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private ItemEntity item;
 
