@@ -7,6 +7,7 @@ import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.cart.repository.CartRepository;
 import com.github.supercodingproject2mall.cartItem.mapper.CartItemMapper;
 import com.github.supercodingproject2mall.mypage.dto.MypageCartItemsDto;
+import com.github.supercodingproject2mall.mypage.dto.MypageRechargeShoppingPay;
 import com.github.supercodingproject2mall.mypage.dto.MypageUserInfo;
 import com.github.supercodingproject2mall.mypage.dto.MypageUserInfoUpdateDto;
 import com.github.supercodingproject2mall.mypage.mapper.MypageMapper;
@@ -60,5 +61,17 @@ public class MypageService {
 
         userRepository.save(user);
         return MypageMapper.INSTANCE.userEntityToMypage(user);
+    }
+
+    public MypageUserInfo rechargeShoppingPay(Integer userId, MypageRechargeShoppingPay rechargeShoppingPay) {
+        UserEntity user = userRepository.findById(userId).orElseThrow(()-> new IllegalArgumentException("Invalid user Id: " + userId));
+
+        Integer currentShoppingPay = user.getShoppingPay();
+        Integer amount = rechargeShoppingPay.getAmount();
+
+        user.setShoppingPay(currentShoppingPay + amount);
+
+        userRepository.save(user);
+        return  MypageMapper.INSTANCE.userEntityToMypage(user);
     }
 }
