@@ -47,10 +47,13 @@ public class CartItemService {
         }
         List<CartItemEntity> cartItemEntities = cartItemRepository.findByCartId(cartEntity.getId());
         List<GetCartItem> cartItems = new ArrayList<>();
+
         for(CartItemEntity cartItemEntity : cartItemEntities){
-            String url = imgRepository.findUrlByItemId(cartItemEntity.getItem().getId());
+            List<String> urls = imgRepository.findUrlByItemId(cartItemEntity.getItem());
+            String url = urls.isEmpty()? null : urls.get(0);
+
             Integer totalPrice = cartItemEntity.getItem().getPrice() * cartItemEntity.getQuantity();
-            List<String> optionSize = itemSizeRepository.findOptionSizeByItemId(cartItemEntity.getItem().getId());
+            List<String> optionSize = itemSizeRepository.findOptionSizeByItemId(cartItemEntity.getItem());
 
             GetCartItem getCartItem = GetCartItem.builder()
                     .cartItemId(cartItemEntity.getId())
@@ -68,56 +71,6 @@ public class CartItemService {
         return cartItems;
     }
 
-    @Transactional
-    public void updateCart(UpdateCartRequest updateCartRequest) {
-
-        Integer cartItemId = Integer.valueOf(updateCartRequest.getCartItemId());
-
-        //cartItem 조회 by cartItemId
-        CartItemEntity cartItemEntity = cartItemRepository.findById(cartItemId)
-                .orElseThrow(()->new NotFoundException("해당 ID:"+updateCartRequest.getCartItemId()+"의 cartItem을 찾을 수 없습니다."));
-
-        //cartItemEntity 수량 수정
-        CartItemEntity updatedCartItemEntity = cartItemEntity.toBuilder()
-                .quantity(updateCartRequest.getQuantity())
-                .build();
-        cartItemRepository.save(updatedCartItemEntity);
-
-
-        //update 대상 cartOptionValue 조회
-        List<CartOptionValueEntity> cartOptionValueEntities = cartOptionValueRepository.findByCartItemId(cartItemId);
-        if (cartOptionValueEntities.isEmpty()) {
-            throw new NotFoundException("cart_item_id: " + cartItemId + "를 가진 cartOptionValue를 찾을 수 없습니다.");
-        }
-        // update 옵션 리스트로 저장
-        List<Integer> newOptionValueIds = updateCartRequest.getOptionValueId();
-        for(int i=0; i<newOptionValueIds.size(); i++){
-            CartOptionValueEntity cartOptionValueEntity = cartOptionValueEntities.get(i);
-            OptionValueEntity optionValueEntity = optionValueRepository.findById(newOptionValueIds.get(i))
-                    .orElseThrow(()->new NotFoundException("수정할 아이템 옵션값을 찾을 수 없습니다."));
-            CartOptionValueEntity updatedCartOptionValueEntity = cartOptionValueEntity.toBuilder()
-                    .optionValue(optionValueEntity)
-                    .build();
-            //cart_item_items_options에 수정된 값 저장
-            cartOptionValueRepository.save(updatedCartOptionValueEntity);
-        }
-    }
-
-    private CartOptionValueEntity cartRequestToCartOptionValue(CartItemEntity cartItemEntity, OptionValueEntity optionValueEntity) {
-        return CartOptionValueEntity
-                .builder()
-                .cartItem(cartItemEntity)
-                .optionValue(optionValueEntity)
-                .build();
-    }
-
-    private CartItemOptionEntity cartRequestToCartItemOption(CartItemEntity cartItemEntity, ItemOptionEntity itemOptionEntity) {
-        return CartItemOptionEntity
-                .builder()
-                .cartItem(cartItemEntity)
-                .itemOption(itemOptionEntity)
-                .build();
-    }
 
     private CartItemEntity cartRequestToCartItemEntity(Integer userCartId, CartRequest cartRequest) {
         CartEntity cartEntity = cartRepository.findById(userCartId)
@@ -125,8 +78,17 @@ public class CartItemService {
         ItemEntity itemEntity = itemRepository.findById(cartRequest.getItemId())
                 .orElseThrow(()-> new NotFoundException("해당 ID: "+cartRequest.getItemId()+"의 아이템을 찾을 수 없습니다."));
 
-        ItemSizeEntity itemSizeEntity = itemSizeRepository.findByItemIdAndOptionSize(itemEntity.getId(), cartRequest.getSize());
-
+        if(cartRequest.getSize() == null){
+            ItemSizeEntity itemSizeEntity = itemSizeRepository.findByItemId(itemEntity);
+            return CartItemEntity
+                    .builder()
+                    .cart(cartEntity)
+                    .item(itemEntity)
+                    .quantity(cartRequest.getQuantity())
+                    .itemSize(itemSizeEntity)
+                    .build();
+        }
+        ItemSizeEntity itemSizeEntity = itemSizeRepository.findByItemIdAndOptionSize(itemEntity, cartRequest.getSize());
         return CartItemEntity
                 .builder()
                 .cart(cartEntity)
@@ -135,5 +97,4 @@ public class CartItemService {
                 .itemSize(itemSizeEntity)
                 .build();
     }
-
 }
