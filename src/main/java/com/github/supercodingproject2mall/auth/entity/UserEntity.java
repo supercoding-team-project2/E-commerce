@@ -40,7 +40,7 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @Column(name = "profile_picture_url", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
+    @Column(name = "profile_picture_url", length = 255, columnDefinition = "VARCHAR(255) DEFAULT ''")
     private String profilePictureUrl;
 
     @Column(name = "about_me", length = 100, columnDefinition = "VARCHAR(100) DEFAULT ''")
