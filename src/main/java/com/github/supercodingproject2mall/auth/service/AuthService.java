@@ -96,7 +96,7 @@ public class AuthService {
         List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
         int cartItemCount = cartItemList.size();
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, cartItemCount));
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, cartItemCount));
     }
 
     private Cookie createCookie(String key, String value) {
