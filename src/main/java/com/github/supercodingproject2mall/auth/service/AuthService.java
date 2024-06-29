@@ -6,6 +6,7 @@ import com.github.supercodingproject2mall.auth.dto.TokenDTO;
 import com.github.supercodingproject2mall.auth.entity.RefreshEntity;
 import com.github.supercodingproject2mall.auth.enums.Gender;
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
+import com.github.supercodingproject2mall.auth.enums.ResponseType;
 import com.github.supercodingproject2mall.auth.enums.UserStatus;
 import com.github.supercodingproject2mall.auth.exception.ErrorType;
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
@@ -13,10 +14,14 @@ import com.github.supercodingproject2mall.auth.repository.RefreshRepository;
 import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.auth.response.LoginResponse;
 import com.github.supercodingproject2mall.auth.response.SignupResponse;
+import com.github.supercodingproject2mall.cart.service.CartService;
+import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
+import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,7 +33,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -38,22 +45,30 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final CartService cartService;
+    private final CartItemRepository cartItemRepository;
 
     public ResponseEntity<SignupResponse> signup(SignupDTO signupDTO) {
 
-        if(userRepository.findByEmail(signupDTO.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignupResponse(ErrorType.DUPLICATE_USER.getMessage(), signupDTO.getEmail()));
+        if (userRepository.findByEmail(signupDTO.getEmail()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignupResponse(ErrorType.DUPLICATE_USER.getMessage()));
         }
 
-        UserEntity user = userRepository.findByEmail(signupDTO.getEmail())
-                                        .orElseGet(() -> userRepository.save(UserEntity.builder()
-                                                                       .email(signupDTO.getEmail())
-                                                                       .password(passwordEncoder.encode(signupDTO.getPassword()))
-                                                                       .address(signupDTO.getAddress())
-                                                                       .phoneNum(signupDTO.getPhoneNum())
-                                                                       .gender(Gender.valueOf(signupDTO.getGender())).build()));
+        try {
+            userRepository.findByEmail(signupDTO.getEmail())
+                    .orElseGet(() -> userRepository.save(UserEntity.builder()
+                            .email(signupDTO.getEmail())
+                            .name(signupDTO.getName())
+                            .password(passwordEncoder.encode(signupDTO.getPassword()))
+                            .address(signupDTO.getAddress())
+                            .phoneNum(signupDTO.getPhoneNum())
+                            .gender(Gender.valueOf(signupDTO.getGender())).build()));
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(new SignupResponse("success", user.getEmail()));
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new SignupResponse(ResponseType.SUCCESS.toString()));
     }
 
     public ResponseEntity<LoginResponse> login(LoginDTO loginDTO, HttpServletResponse response) {
@@ -71,18 +86,22 @@ public class AuthService {
         String refreshToken = jwtTokenProvider.createToken("refresh", user.getEmail(), user.getId(), 86400000L);
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
-        
+
         response.addCookie(createCookie("refresh", refreshToken));
         response.setStatus(HttpStatus.OK.value());
 
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
-        return ResponseEntity.ok(new LoginResponse("success", tokenDTO));
+        Integer cartId = cartService.findCart(user.getId());
+        List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
+        int cartItemCount = cartItemList.size();
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, cartItemCount));
     }
 
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
-        cookie.setMaxAge(24*60*60);
+        cookie.setMaxAge(24 * 60 * 60);
         cookie.setHttpOnly(true);
 
         return cookie;
@@ -99,12 +118,12 @@ public class AuthService {
     }
 
     public Cookie logout(String refreshToken) {
-        if(refreshToken == null) {
+        if (refreshToken == null) {
             throw new JwtException(ErrorType.NULL_TOKEN.getMessage());
         }
 
         Boolean isExist = refreshRepository.existsByRefresh(refreshToken);
-        if(!isExist) {
+        if (!isExist) {
             throw new JwtException("리프레시토큰을 찾을 수 없습니다.");
         }
 
