@@ -1,7 +1,9 @@
 package com.github.supercodingproject2mall.auth.filter;
 
+import com.github.supercodingproject2mall.auth.enums.ResponseType;
 import com.github.supercodingproject2mall.auth.exception.ErrorType;
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
+import com.github.supercodingproject2mall.auth.response.ValidateTokenResponse;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,19 +21,19 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
-    private final String SIGNUP_URL = "/auth/signup";
-    private final String LOGIN_URL = "/auth/login";
-    private final String SWAGGER_URL = "/swagger-ui/";
-    private final String API_DOCS_URL = "/api-docs/";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+        final String SIGNUP_URL =   "/api/auth/signup";
+        final String LOGIN_URL =    "/api/auth/login";
+        final String SWAGGER_URL =  "/swagger-ui/";
+        final String API_DOCS_URL = "/api-docs/";
         String requestUri = request.getRequestURI().toString();
         String jwtToken = jwtTokenProvider.resolveToken(request);
 
         // TODO : 물품조회 uri 추가하기
         boolean isPublicUri = requestUri.equals(SIGNUP_URL) || requestUri.equals(LOGIN_URL) ||
-                              requestUri.startsWith(SWAGGER_URL) || requestUri.startsWith(API_DOCS_URL);
+                requestUri.startsWith(SWAGGER_URL) || requestUri.startsWith(API_DOCS_URL);
 
         if (jwtToken == null) {
             if (isPublicUri) {
@@ -42,18 +44,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
+        ValidateTokenResponse validateTokenResponse = jwtTokenProvider.validateToken(jwtToken);
+        boolean isValidateToken = validateTokenResponse.getResponseType().toString().equals(ResponseType.SUCCESS.toString());
+        boolean isExpiredToken = validateTokenResponse.getMessage().equals(ErrorType.EXPIRED_TOKEN.toString());
+
+        if (isValidateToken) {
             Authentication authentication = jwtTokenProvider.getAuthentication(jwtToken);
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
-
-        if (!jwtTokenProvider.validateToken(jwtToken).getResponseType().toString().equals("SUCCESS")) {
-            if (jwtTokenProvider.validateToken(jwtToken).getMessage().equals(ErrorType.EXPIRED_TOKEN.toString())) {
-                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        }else {
+            if (isExpiredToken) {
+                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                 response.getWriter().write("Token is expired");
 
                 return;
             }
+
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().write("Invalid or expired token");
 
