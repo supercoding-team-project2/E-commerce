@@ -26,7 +26,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // TODO : 물품조회 uri 추가하기
         if (jwtToken == null) {
-            if(requestUri.equals("/api/auth/signup") || requestUri.equals("/api/auth/login")) {
+            if(requestUri.equals("/api/auth/signup") || requestUri.equals("/api/auth/login") || requestUri.startsWith("/swagger-ui/") || requestUri.startsWith("/api-docs/")) {
                 filterChain.doFilter(request, response);
             }
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
