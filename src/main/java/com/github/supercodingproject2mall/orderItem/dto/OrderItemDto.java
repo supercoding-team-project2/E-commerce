@@ -15,4 +15,5 @@ public class OrderItemDto {
     private Integer quantity;
     private Integer pricePerUnit;
     private String name;
+    private String imageURL;
 }
