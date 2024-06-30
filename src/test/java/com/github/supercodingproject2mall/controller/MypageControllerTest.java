@@ -1,6 +1,8 @@
 package com.github.supercodingproject2mall.controller;
 
+import com.github.supercodingproject2mall.auth.enums.ResponseType;
 import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
+import com.github.supercodingproject2mall.auth.response.ValidateTokenResponse;
 import com.github.supercodingproject2mall.mypage.dto.MypageCartItemsDto;
 import com.github.supercodingproject2mall.mypage.dto.MypageUserInfo;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
@@ -33,7 +35,7 @@ class MypageControllerTest {
     void findUserInfoTest() throws Exception{
         String token = jwtTokenProvider.createToken("access","jominsu@naver.com",1,600000L);
         when(jwtTokenProvider.resolveToken(any())).thenReturn(token);
-        when(jwtTokenProvider.validateToken(token)).thenReturn(true);
+        when(jwtTokenProvider.validateToken(token)).thenReturn(new ValidateTokenResponse(ResponseType.SUCCESS, "Token is Valid"));
         when(jwtTokenProvider.getUserId(token)).thenReturn(1);
         when(mypageService.findUserInfo(1)).thenReturn(Optional.of(new MypageUserInfo()));
 
@@ -47,7 +49,7 @@ class MypageControllerTest {
     void getUserCartItemsTest() throws Exception{
         String token = jwtTokenProvider.createToken("access","jominsu@naver.com",1,600000L);
         when(jwtTokenProvider.resolveToken(any())).thenReturn(token);
-        when(jwtTokenProvider.validateToken(token)).thenReturn(true);
+        when(jwtTokenProvider.validateToken(token)).thenReturn(new ValidateTokenResponse(ResponseType.SUCCESS, "Token is Valid"));
         when(jwtTokenProvider.getUserId(token)).thenReturn(1);
         when(mypageService.getCartItemsForUser(1)).thenReturn(Collections.singletonList(new MypageCartItemsDto()));
 
@@ -60,7 +62,7 @@ class MypageControllerTest {
     void getUserOrderTest() throws Exception{
         String token = jwtTokenProvider.createToken("access","jominsu@naver.com",1,600000L);
         when(jwtTokenProvider.resolveToken(any())).thenReturn(token);
-        when(jwtTokenProvider.validateToken(token)).thenReturn(true);
+        when(jwtTokenProvider.validateToken(token)).thenReturn(new ValidateTokenResponse(ResponseType.SUCCESS, "Token is Valid"));
         when(jwtTokenProvider.getUserId(token)).thenReturn(1);
         when(mypageService.getOrderHistoryForUser(1)).thenReturn(Collections.singletonList(new OrderHistoryDto()));
 
