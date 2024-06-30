@@ -8,6 +8,9 @@ import com.github.supercodingproject2mall.cart.service.CartService;
 import com.github.supercodingproject2mall.cartItem.dto.CartItemResponse;
 import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
 import com.github.supercodingproject2mall.cartItem.service.CartItemService;
+import com.github.supercodingproject2mall.order.dto.GetOrderRequest;
+import com.github.supercodingproject2mall.order.dto.GetOrderResponse;
+import com.github.supercodingproject2mall.order.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +29,7 @@ public class CartController {
     private final CartService cartService;
     private final CartItemService cartItemService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final OrderService orderService;
 
     @PostMapping("/cart/add")
     @SecurityRequirement(name = "Bearer Authentication")
@@ -65,4 +69,11 @@ public class CartController {
         return ResponseEntity.ok(new CartResponse("카트 수정 완료"));
     }
 
+    @GetMapping("/cart/order")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<GetOrderResponse> orderCart(HttpServletRequest request, @RequestBody GetOrderRequest getOrderRequest){
+        String token = jwtTokenProvider.resolveToken(request);
+        Integer userId = jwtTokenProvider.getUserId(token);
+        return ResponseEntity.ok(orderService.getOrderCart(userId,getOrderRequest));
+    }
 }
