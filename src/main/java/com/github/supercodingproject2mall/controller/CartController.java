@@ -47,6 +47,15 @@ public class CartController {
         return ResponseEntity.ok(new CartItemResponse(getCartItems));
     }
 
+    @DeleteMapping("/cart/{cartItemId}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<CartResponse> deleteCart(HttpServletRequest request, @PathVariable String cartItemId) {
+        String token = jwtTokenProvider.resolveToken(request);
+        Integer userId = jwtTokenProvider.getUserId(token);
+        cartItemService.deleteUserCartItem(userId, cartItemId);
+        return ResponseEntity.ok(new CartResponse("장바구니에 담긴 해당 물품이 삭제되었습니다."));
+    }
+
 //    @PutMapping("/cart/update")
 //    @SecurityRequirement(name = "Bearer Authentication")
 //    public ResponseEntity<CartResponse> updateCart(HttpServletRequest request, @RequestBody UpdateCartRequest updateCartRequest){

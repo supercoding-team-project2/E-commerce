@@ -16,6 +16,7 @@ import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.itemSize.repository.ItemSizeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.webjars.NotFoundException;
 
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CartItemService {
@@ -71,6 +73,21 @@ public class CartItemService {
         return cartItems;
     }
 
+    public void deleteUserCartItem(Integer userId, String cartItemId) {
+        Integer cartItemIdInt = Integer.parseInt(cartItemId);
+        CartItemEntity deletecartItem =  cartItemRepository.findCartIdById(cartItemIdInt);
+        log.info("받아온 삭제할 cartItem = {}", deletecartItem.getCart());
+
+        CartEntity cartEntity = cartRepository.findByUserId(userId)
+                .orElseThrow(()-> new NotFoundException("해당 ID: " + userId+"유저의 카트를 찾을 수 없습니다."));
+        log.info("삭제할 cartItem이 유저의 카트가 맞는지 확인 cartEntityId= {}, cartEntityUserId ={} ", cartEntity.getId(),cartEntity.getUser());
+
+        if(!cartEntity.getId().equals(deletecartItem.getCart().getId())){
+            log.info("token으로 받아온 user의 cartId={}, param으로 받아온 cartItemId={}" ,cartEntity.getId(),cartItemId);
+            throw  new NotFoundException("유저의 장바구니 내역이 아닙니다.");
+        }
+        cartItemRepository.deleteById(cartItemIdInt);
+    }
 
     private CartItemEntity cartRequestToCartItemEntity(Integer userCartId, CartRequest cartRequest) {
         CartEntity cartEntity = cartRepository.findById(userCartId)
