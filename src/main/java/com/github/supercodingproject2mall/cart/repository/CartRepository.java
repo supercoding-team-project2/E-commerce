@@ -12,19 +12,20 @@ import java.util.Optional;
 public interface CartRepository extends JpaRepository<CartEntity, Integer> {
     Optional<CartEntity> findByUserId(Integer cartId);
 
-    @Query(value = "SELECT i.name AS item_name, " +
-            "ci.quantity, " +
-            "GROUP_CONCAT(DISTINCT io.option_name ORDER BY io.option_name SEPARATOR ', ') AS option_names, " +
-            "GROUP_CONCAT(DISTINCT ov.value_name ORDER BY ov.value_name SEPARATOR ', ') AS option_values " +
-            "FROM users u " +
-            "JOIN carts c ON u.id = c.user_id " +
+    @Query(value = "SELECT " +
+            "i.name AS itemName, " +
+            "i.price AS price, " +
+            "MIN(img.url) AS imageURL, " +
+            "ci.quantity AS quantity, " +
+            "isz.option_size AS size " +
+            "FROM carts c " +
             "JOIN cart_items ci ON c.id = ci.cart_id " +
             "JOIN items i ON ci.item_id = i.id " +
-            "LEFT JOIN cart_items_item_options ciio ON ci.id = ciio.cart_items_id " +
-            "LEFT JOIN items_options io ON ciio.items_options_id = io.id " +
-            "LEFT JOIN cart_items_option_values ciov ON ci.id = ciov.cart_items_id " +
-            "LEFT JOIN option_values ov ON ciov.option_values_id = ov.id " +
-            "WHERE u.id = ?1 " +
-            "GROUP BY ci.cart_id, ci.item_id, ci.quantity, i.name", nativeQuery = true)
+            "JOIN item_sizes isz ON ci.item_size_id = isz.id " +
+            "LEFT JOIN imgs img ON i.id = img.item_id " +
+            "WHERE c.user_id = :userId " +
+            "GROUP BY i.id, ci.id, isz.option_size, ci.quantity, i.price " +
+            "ORDER BY i.name",
+            nativeQuery = true)
     List<Object[]> findCartDetailsByUserId(Integer userId);
 }
