@@ -20,6 +20,7 @@ import java.util.List;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class OrderHistoryDto {
     private Integer orderId;
+    private String orderNumber;
     private Integer totalPrice;
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
