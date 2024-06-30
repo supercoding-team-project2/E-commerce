@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String LOGIN_URL =    "/api/auth/login";
         final String SWAGGER_URL =  "/swagger-ui/";
         final String API_DOCS_URL = "/api-docs/";
-        final String ITEM_URL = "/api/item";
+        final String ITEM_URL = "/api/item/";
         String requestUri = request.getRequestURI().toString();
         String jwtToken = jwtTokenProvider.resolveToken(request);
 
