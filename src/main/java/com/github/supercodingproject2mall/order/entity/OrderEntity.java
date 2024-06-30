@@ -30,5 +30,5 @@ public class OrderEntity {
     private LocalDateTime orderDate;
 
     @Column(name = "order_number", length = 100)
-    private Integer orderNumber;
+    private String orderNumber;
 }
