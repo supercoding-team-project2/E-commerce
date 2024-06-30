@@ -11,6 +11,4 @@ import java.util.List;
 public interface CartItemRepository extends JpaRepository<CartItemEntity,Integer> {
     List<CartItemEntity> findByCartId(Integer cartId);
 
-    @Query("SELECT i FROM CartItemEntity i WHERE i.id = :id")
-    CartItemEntity findCartIdById(Integer id);
 }

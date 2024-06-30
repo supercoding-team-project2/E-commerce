@@ -1,4 +1,4 @@
-package com.github.supercodingproject2mall.cart.dto;
+package com.github.supercodingproject2mall.cartItem.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,6 +11,6 @@ import java.util.List;
 @AllArgsConstructor
 public class UpdateCartRequest {
     private String cartItemId;
-    private List<Integer> optionValueId;
+    private String itemSize;
     private Integer quantity;
 }

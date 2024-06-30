@@ -1,12 +1,10 @@
 package com.github.supercodingproject2mall.cartItem.service;
 
-import com.github.supercodingproject2mall.auth.entity.UserEntity;
 import com.github.supercodingproject2mall.cart.dto.CartRequest;
-import com.github.supercodingproject2mall.cart.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.cart.repository.CartRepository;
-import com.github.supercodingproject2mall.cartItem.dto.CartItemResponse;
 import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
+import com.github.supercodingproject2mall.cartItem.dto.UpdateCartRequest;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
 import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
 import com.github.supercodingproject2mall.img.repository.ImgRepository;
@@ -14,7 +12,6 @@ import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import com.github.supercodingproject2mall.item.repository.ItemRepository;
 import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.itemSize.repository.ItemSizeRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,7 +19,6 @@ import org.webjars.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -75,7 +71,8 @@ public class CartItemService {
 
     public void deleteUserCartItem(Integer userId, String cartItemId) {
         Integer cartItemIdInt = Integer.parseInt(cartItemId);
-        CartItemEntity deletecartItem =  cartItemRepository.findCartIdById(cartItemIdInt);
+        CartItemEntity deletecartItem =  cartItemRepository.findById(cartItemIdInt)
+                .orElseThrow(()->new NotFoundException("삭제할 cartItem을 찾을 수 없습니다."));
         log.info("받아온 삭제할 cartItem = {}", deletecartItem.getCart());
 
         CartEntity cartEntity = cartRepository.findByUserId(userId)
@@ -84,7 +81,7 @@ public class CartItemService {
 
         if(!cartEntity.getId().equals(deletecartItem.getCart().getId())){
             log.info("token으로 받아온 user의 cartId={}, param으로 받아온 cartItemId={}" ,cartEntity.getId(),cartItemId);
-            throw  new NotFoundException("유저의 장바구니 내역이 아닙니다.");
+            throw  new NotFoundException("삭제할 cartItem은 유저의 장바구니 내역이 아닙니다.");
         }
         cartItemRepository.deleteById(cartItemIdInt);
     }
@@ -113,5 +110,38 @@ public class CartItemService {
                 .quantity(cartRequest.getQuantity())
                 .itemSize(itemSizeEntity)
                 .build();
+    }
+
+    public void updateCart(Integer userId, UpdateCartRequest updateCartRequest) {
+        CartItemEntity cartItemEntity = cartItemRepository.findById(Integer.parseInt(updateCartRequest.getCartItemId()))
+                .orElseThrow(() -> new NotFoundException("수정할 cartItem을 찾을 수 없습니다."));
+
+        //user의 cartItem이 맞는지 확인
+        CartEntity cartEntity = cartRepository.findByUserId(userId)
+                .orElseThrow(()-> new NotFoundException("해당 ID: " + userId+"유저의 카트를 찾을 수 없습니다."));
+        if(!cartEntity.getId().equals(cartItemEntity.getCart().getId())){
+            throw  new NotFoundException("수정할 cartItem은 유저의 장바구니 내역이 아닙니다.");
+        }
+
+        ItemSizeEntity updateItemSize = new ItemSizeEntity();
+        //수정할 아이템 찾기
+        ItemEntity itemEntity = cartItemEntity.getItem();
+        //수정할 아이템의 사이즈를 찾아 itemsizeEntity의 id 가져오기
+        List<ItemSizeEntity> itemSizeEntities = itemSizeRepository.findAllByItemId(itemEntity);
+        log.info("ItemSizeEntities = {}", itemSizeEntities);
+        for(ItemSizeEntity itemSizeEntity : itemSizeEntities){
+            log.info("updateCartRequest ItemSize ={}, itemsSizeEntity = {}",updateCartRequest.getItemSize(),itemSizeEntity.getOptionSize());
+            if(updateCartRequest.getItemSize().equals(itemSizeEntity.getOptionSize())){
+                updateItemSize = itemSizeEntity;
+                break;
+            }
+        }
+
+        CartItemEntity updateCartItem = cartItemEntity.toBuilder()
+                .quantity(updateCartRequest.getQuantity())
+                .itemSize(updateItemSize)
+                .build();
+
+        cartItemRepository.save(updateCartItem);
     }
 }

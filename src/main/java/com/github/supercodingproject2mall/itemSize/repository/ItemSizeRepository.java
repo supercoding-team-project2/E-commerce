@@ -19,4 +19,6 @@ public interface ItemSizeRepository extends JpaRepository<ItemSizeEntity, Intege
 
         @Query("SELECT i.optionSize FROM ItemSizeEntity i WHERE i.itemId = :itemId")
         List<String> findOptionSizeByItemId(ItemEntity itemId);
+
+        List<ItemSizeEntity> findAllByItemId(ItemEntity item);
 }
