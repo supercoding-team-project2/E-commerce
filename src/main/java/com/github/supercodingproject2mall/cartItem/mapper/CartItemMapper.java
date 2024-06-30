@@ -12,10 +12,11 @@ default MypageCartItemsDto toDto(Object[] objects) {
         return null;
     }
     String itemName = (String) objects[0];
-    Integer quantity = (Integer) objects[1];
-    String optionNames = (String) objects[2];
-    String optionValues = (String) objects[3];
+    Integer price = (Integer) objects[1];
+    String imageURL = (String) objects[2];
+    Integer quantity = (Integer) objects[3];
+    String size = (String) objects[4];
 
-    return new MypageCartItemsDto(itemName, quantity, optionNames, optionValues);
+    return new MypageCartItemsDto(itemName, price, imageURL , quantity,size);
 }
 }
