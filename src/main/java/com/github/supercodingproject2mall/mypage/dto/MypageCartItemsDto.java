@@ -14,7 +14,8 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MypageCartItemsDto {
     private String itemName;
+    private Integer price;
+    private String imageURL;
     private Integer quantity;
-    private String optionNames;
-    private String optionValues;
+    private String size;
 }
