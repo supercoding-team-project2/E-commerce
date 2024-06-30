@@ -41,7 +41,8 @@ public class JwtTokenProvider {
 
     public ValidateTokenResponse validateToken(String accessToken) {
         Boolean isNotExpired = isNotExpired(accessToken);
-        Claims claims = null;
+        Claims claims;
+        final String validTokenMessage = "Token is valid";
 
         if (isNotExpired) {
             try {
@@ -54,7 +55,7 @@ public class JwtTokenProvider {
                 return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.INVALID_TOKEN.getMessage());
             }
 
-            return new ValidateTokenResponse(ResponseType.SUCCESS, claims);
+            return new ValidateTokenResponse(ResponseType.SUCCESS, claims, validTokenMessage);
         }
 
         return new ValidateTokenResponse(ResponseType.ERROR, ErrorType.EXPIRED_TOKEN.getMessage());
