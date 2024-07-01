@@ -12,10 +12,7 @@ import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import com.github.supercodingproject2mall.item.repository.ItemRepository;
 import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.itemSize.repository.ItemSizeRepository;
-import com.github.supercodingproject2mall.order.dto.GetOrderItemResponse;
-import com.github.supercodingproject2mall.order.dto.GetOrderRequest;
-import com.github.supercodingproject2mall.order.dto.GetOrderResponse;
-import com.github.supercodingproject2mall.order.dto.UploadOrderRequest;
+import com.github.supercodingproject2mall.order.dto.*;
 import com.github.supercodingproject2mall.order.entity.OrderEntity;
 import com.github.supercodingproject2mall.order.repository.OrderRepository;
 import com.github.supercodingproject2mall.orderItem.entity.OrderItemEntity;
@@ -150,5 +147,25 @@ public class OrderService {
             cartItemRepository.deleteById(cartItemId);
         }
 
+    }
+
+    public GetOrderSuccess successOrder(Integer userId, String orderId) {
+        UserEntity userEntity = userRepository.findById(userId)
+                .orElseThrow(()->new NotFoundException("주문에 성공한 해당 유저를 찾을 수 없습니다."));
+        OrderCustomerInfo orderCustomerInfo = OrderCustomerInfo.builder()
+                .name(userEntity.getName())
+                .phoneNumber(userEntity.getPhoneNum())
+                .email(userEntity.getEmail())
+                .build();
+
+        OrderEntity orderEntity = orderRepository.findById(Integer.valueOf(orderId))
+                .orElseThrow(()-> new NotFoundException("해당 주문을 찾을 수 없습니다."));
+        GetOrderSuccess orderSuccess = GetOrderSuccess.builder()
+                .orderNumber(orderEntity.getOrderNumber())
+                .orderDate(orderEntity.getOrderDate())
+                .totalPrice(orderEntity.getTotalPrice())
+                .customerInfo(orderCustomerInfo)
+                .build();
+        return orderSuccess;
     }
 }

@@ -10,6 +10,7 @@ import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
 import com.github.supercodingproject2mall.cartItem.service.CartItemService;
 import com.github.supercodingproject2mall.order.dto.GetOrderRequest;
 import com.github.supercodingproject2mall.order.dto.GetOrderResponse;
+import com.github.supercodingproject2mall.order.dto.GetOrderSuccess;
 import com.github.supercodingproject2mall.order.dto.UploadOrderRequest;
 import com.github.supercodingproject2mall.order.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -87,5 +88,11 @@ public class CartController {
         return ResponseEntity.ok(new CartResponse("주문이 성공적으로 완료되었습니다."));
     }
 
-
+    @GetMapping("/cart/order/success/{orderId}")
+    @SecurityRequirement(name = "Bearer Authentication")
+    public ResponseEntity<GetOrderSuccess> orderSuccess(HttpServletRequest request, @PathVariable String orderId){
+        String token = jwtTokenProvider.resolveToken(request);
+        Integer userId = jwtTokenProvider.getUserId(token);
+        return ResponseEntity.ok(orderService.successOrder(userId,orderId));
+    }
 }
