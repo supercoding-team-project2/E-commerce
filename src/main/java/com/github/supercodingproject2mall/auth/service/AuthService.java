@@ -17,6 +17,7 @@ import com.github.supercodingproject2mall.auth.response.SignupResponse;
 import com.github.supercodingproject2mall.cart.service.CartService;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
 import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
+import com.github.supercodingproject2mall.mypage.service.StorageService;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,6 +32,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
 import java.util.List;
@@ -47,14 +49,17 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final CartService cartService;
     private final CartItemRepository cartItemRepository;
+    private final StorageService storageService;
 
     public ResponseEntity<SignupResponse> signup(SignupDTO signupDTO) {
-
-        if (userRepository.findByEmail(signupDTO.getEmail()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignupResponse(ErrorType.DUPLICATE_USER.getMessage()));
-        }
-
         try {
+            MultipartFile profilePicture = signupDTO.getProfilePicture();
+            String fileUrl = storageService.uploadFile(profilePicture);
+
+            if (userRepository.findByEmail(signupDTO.getEmail()).isPresent()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SignupResponse(ErrorType.DUPLICATE_USER.getMessage()));
+            }
+
             userRepository.findByEmail(signupDTO.getEmail())
                     .orElseGet(() -> userRepository.save(UserEntity.builder()
                             .email(signupDTO.getEmail())
@@ -62,9 +67,10 @@ public class AuthService {
                             .password(passwordEncoder.encode(signupDTO.getPassword()))
                             .address(signupDTO.getAddress())
                             .phoneNum(signupDTO.getPhoneNum())
+                            .profilePictureUrl(fileUrl)
                             .gender(Gender.valueOf(signupDTO.getGender())).build()));
 
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
