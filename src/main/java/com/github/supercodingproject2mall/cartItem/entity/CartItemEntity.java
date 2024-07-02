@@ -27,7 +27,7 @@ public class CartItemEntity {
     @JoinColumn(name = "item_id", nullable = false)
     private ItemEntity item;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @ManyToOne(fetch = FetchType.LAZY)
