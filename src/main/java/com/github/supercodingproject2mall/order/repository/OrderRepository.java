@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
     @Query(value = "SELECT JSON_ARRAYAGG(" +
@@ -26,4 +28,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             "WHERE o.user_id = :userId " +
             "GROUP BY o.id, o.order_date, o.total_price", nativeQuery = true)
     String findOrdersWithItemsByUserId(Integer userId);
+
+    @Query("SELECT o.orderNumber FROM OrderEntity o")
+    List<String> findOrderNumber();
 }

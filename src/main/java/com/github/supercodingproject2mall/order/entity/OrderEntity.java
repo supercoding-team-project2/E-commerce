@@ -23,12 +23,12 @@ public class OrderEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Column(name = "total_price")
+    @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
-    @Column(name = "order_date")
+    @Column(name = "order_date", nullable = false)
     private LocalDateTime orderDate;
 
-    @Column(name = "order_number", length = 100)
+    @Column(name = "order_number", length = 100, nullable = false)
     private String orderNumber;
 }

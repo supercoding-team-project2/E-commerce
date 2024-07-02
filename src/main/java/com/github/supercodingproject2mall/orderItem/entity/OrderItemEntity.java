@@ -26,9 +26,9 @@ public class OrderItemEntity {
     @JoinColumn(name = "item_id")
     private ItemEntity item;
 
-    @Column(name = "quantity")
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
-    @Column(name = "price_per_unit")
+    @Column(name = "price_per_unit", nullable = false)
     private Integer pricePerUnit;
 }
