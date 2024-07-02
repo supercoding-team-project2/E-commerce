@@ -14,6 +14,7 @@ import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.itemSize.repository.ItemSizeRepository;
 import com.github.supercodingproject2mall.order.dto.*;
 import com.github.supercodingproject2mall.order.entity.OrderEntity;
+import com.github.supercodingproject2mall.order.exception.InsufficientStockException;
 import com.github.supercodingproject2mall.order.repository.OrderRepository;
 import com.github.supercodingproject2mall.orderItem.entity.OrderItemEntity;
 import com.github.supercodingproject2mall.orderItem.repository.OrderItemRepository;
@@ -78,7 +79,7 @@ public class OrderService {
     }
 
     @Transactional
-    public void upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
+    public List<InsufficientItem> upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
         UserEntity orderUser = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("주문자 정보를 찾을 수 없습니다."));
 
@@ -104,16 +105,21 @@ public class OrderService {
                 .build();
         orderRepository.save(orderEntity);
 
+        List<InsufficientItem> insufficientItems = new ArrayList<>();
         // 수량 확인
         List<Integer> cartItemIds = uploadOrderRequest.getCartItemId();
         for(Integer cartItemId : cartItemIds) {
             CartItemEntity cartItemEntity = cartItemRepository.findById(cartItemId)
                     .orElseThrow(()->new NotFoundException("주문할 cartItem을 찾을 수 없습니다."));
+
             //주문할 수량이 아이템의 재고보다 크면 주문 안됨
-            //장바구니에 넣은 수량
             Integer quantity = cartItemEntity.getQuantity();
             if(quantity > cartItemEntity.getItemSize().getStock()){
-                throw new IllegalArgumentException("item: "+cartItemEntity.getItem().getName()+"의 재고가 부족합니다.");
+                insufficientItems.add(new InsufficientItem(cartItemEntity.getItem().getName(), cartItemEntity.getItemSize().getStock()));
+                if (!insufficientItems.isEmpty()) {
+                    throw new InsufficientStockException("재고가 부족합니다.",insufficientItems);
+                }
+                continue;
             }else {
                 //옵션별 감소한 재고 저장
                 ItemSizeEntity postOrderItemSize = itemSizeRepository.findById(cartItemEntity.getItemSize().getId())
@@ -146,7 +152,7 @@ public class OrderService {
 
             cartItemRepository.deleteById(cartItemId);
         }
-
+        return insufficientItems;
     }
 
     public GetOrderSuccess successOrder(Integer userId, String orderId) {

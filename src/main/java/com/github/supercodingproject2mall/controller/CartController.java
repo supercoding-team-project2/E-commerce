@@ -8,15 +8,14 @@ import com.github.supercodingproject2mall.cart.service.CartService;
 import com.github.supercodingproject2mall.cartItem.dto.CartItemResponse;
 import com.github.supercodingproject2mall.cartItem.dto.GetCartItem;
 import com.github.supercodingproject2mall.cartItem.service.CartItemService;
-import com.github.supercodingproject2mall.order.dto.GetOrderRequest;
-import com.github.supercodingproject2mall.order.dto.GetOrderResponse;
-import com.github.supercodingproject2mall.order.dto.GetOrderSuccess;
-import com.github.supercodingproject2mall.order.dto.UploadOrderRequest;
+import com.github.supercodingproject2mall.order.dto.*;
+import com.github.supercodingproject2mall.order.exception.InsufficientStockException;
 import com.github.supercodingproject2mall.order.service.OrderService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -81,11 +80,16 @@ public class CartController {
 
     @PostMapping("/cart/order")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<CartResponse> uploadOrder(HttpServletRequest request, @RequestBody UploadOrderRequest uploadOrderRequest){
+    public ResponseEntity<?> uploadOrder(HttpServletRequest request, @RequestBody UploadOrderRequest uploadOrderRequest){
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
-        orderService.upLoadOrder(userId,uploadOrderRequest);
-        return ResponseEntity.ok(new CartResponse("주문이 성공적으로 완료되었습니다."));
+        try{
+            orderService.upLoadOrder(userId,uploadOrderRequest);
+            return ResponseEntity.ok(new CartResponse("성공적으로 결제가 되었습니다."));
+        }catch (InsufficientStockException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getInsufficientItems());
+        }
+
     }
 
     @GetMapping("/cart/order/success/{orderId}")
