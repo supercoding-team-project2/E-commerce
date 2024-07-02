@@ -29,4 +29,10 @@ public class ItemController {
     public ResponseEntity<Page<AllItemDto>> getAllItem(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return ResponseEntity.ok(itemService.getAllItem(page,size));
     }
+
+    @GetMapping("/item/category/{categoryName}")
+    public ResponseEntity<Page<AllItemDto>> getItemByCategory(@PathVariable(name = "categoryName") String category,
+                                                              @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(itemService.getItemByCategory(category,page,size));
+    }
 }

@@ -25,4 +25,7 @@ public interface ItemRepository extends JpaRepository<ItemEntity , Integer> {
 
     @Query("SELECT i FROM ItemEntity i WHERE i.totalStock != 0")
     Page<ItemEntity> findAll(Pageable pageable);
+
+    @Query("SELECT i FROM ItemEntity i WHERE (i.categoryGender = :category or i.categoryKind =: category) and i.totalStock !=0")
+    Page<ItemEntity> findAllByCategory(Pageable pageable, String category);
 }

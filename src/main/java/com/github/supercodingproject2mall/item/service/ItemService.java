@@ -58,4 +58,24 @@ public class ItemService {
         }
         return new PageImpl<>(allItems,pageable,itemEntities.getTotalElements());
     }
+
+    public Page<AllItemDto> getItemByCategory(String category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ItemEntity> itemEntities = itemRepository.findAllByCategory(pageable, category);
+
+        List<AllItemDto> allItems = new ArrayList<>();
+        for (ItemEntity itemEntity : itemEntities.getContent()) {
+            List<String> urls = imgRepository.findUrlByItemId(itemEntity);
+            String url = urls.isEmpty()? null : urls.get(0);
+
+            AllItemDto allItem = AllItemDto.builder()
+                    .name(itemEntity.getName())
+                    .price(itemEntity.getPrice())
+                    .url(url)
+                    .build();
+            allItems.add(allItem);
+        }
+        return new PageImpl<>(allItems,pageable,itemEntities.getTotalElements());
+    }
+
 }
