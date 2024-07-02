@@ -28,7 +28,10 @@ public class AuthController {
     private final JwtTokenProvider jwtTokenProvider;
 
     @PostMapping(value = "/signup")
-    public ResponseEntity<SignupResponse> signup(@Valid @RequestBody SignupDTO signupDTO, BindingResult bindingResult) {
+    public ResponseEntity<SignupResponse> signup(@Valid SignupDTO signupDTO, BindingResult bindingResult) {
+        log.info(" =========== signup controller ===========");
+        log.info("signupDTO = " + signupDTO);
+
         if(bindingResult.hasErrors()) {
             String errorMessage = bindingResult.getFieldError().getDefaultMessage();
             SignupResponse signupResponse = new SignupResponse(errorMessage);
