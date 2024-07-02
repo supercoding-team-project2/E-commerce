@@ -1,6 +1,8 @@
 package com.github.supercodingproject2mall.item.repository;
 
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +22,7 @@ public interface ItemRepository extends JpaRepository<ItemEntity , Integer> {
             "WHERE i.id = :itemId " +
             "GROUP BY i.id, i.name, i.price, i.description", nativeQuery = true)
     List<Object[]> findItemDetailById(@Param("itemId") Integer itemId);
+
+    @Query("SELECT i FROM ItemEntity i WHERE i.totalStock != 0")
+    Page<ItemEntity> findAll(Pageable pageable);
 }

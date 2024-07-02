@@ -1,15 +1,14 @@
 package com.github.supercodingproject2mall.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.github.supercodingproject2mall.item.dto.AllItemDto;
 import com.github.supercodingproject2mall.item.dto.ItemDetailDto;
 import com.github.supercodingproject2mall.item.service.ItemService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,5 +23,10 @@ public class ItemController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(itemDetail);
+    }
+
+    @GetMapping("/item/all")
+    public ResponseEntity<Page<AllItemDto>> getAllItem(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        return ResponseEntity.ok(itemService.getAllItem(page,size));
     }
 }
