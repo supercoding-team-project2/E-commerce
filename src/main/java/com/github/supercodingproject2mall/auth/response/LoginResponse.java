@@ -10,7 +10,6 @@ public class LoginResponse {
     private String message;
     private TokenDTO token;
     private int cartQuantity;
-    private String email;
 
     public LoginResponse(String message) {
         this.message = message;
