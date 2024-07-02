@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @AllArgsConstructor
@@ -33,4 +34,6 @@ public class SignupDTO {
 
     @NotBlank(message = "성별을 선택하세요")
     private String gender;
+
+    private MultipartFile profilePicture;
 }
