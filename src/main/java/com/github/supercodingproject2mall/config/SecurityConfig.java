@@ -36,19 +36,6 @@ public class SecurityConfig {
                 )
                 .formLogin(AbstractHttpConfigurer::disable)
                 .csrf(AbstractHttpConfigurer::disable)
-                .cors(AbstractHttpConfigurer::disable)
-//                .cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
-//                    @Override
-//                    public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
-//                        CorsConfiguration config = new CorsConfiguration();
-//                        config.setAllowedOrigins(Collections.singletonList("*"));
-//                        config.setAllowedMethods(Collections.singletonList("*"));
-//                        config.setAllowCredentials(true);
-//                        config.setAllowedHeaders(Collections.singletonList("*"));
-//                        config.setMaxAge(3600L);
-//                        return config;
-//                    }
-//                }))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .sessionManagement((sessionManagement) -> sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -57,6 +44,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/auth/**").permitAll()
                                 .requestMatchers("/api/mypage/**").permitAll()
                                 .requestMatchers("/api/cart/**").permitAll()
+                                .requestMatchers("/api/item/**").permitAll()
                                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**").permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);

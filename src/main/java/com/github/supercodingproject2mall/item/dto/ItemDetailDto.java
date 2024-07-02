@@ -1,21 +1,21 @@
-package com.github.supercodingproject2mall.mypage.dto;
+package com.github.supercodingproject2mall.item.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
-public class MypageCartItemsDto {
+public class ItemDetailDto {
     private String itemName;
-    private Integer price;
-    private String imageURL;
-    private Integer quantity;
-    private String size;
+    private Integer itemPrice;
+    private String itemDescription;
+    private List<String> sizeOptionsWithStock;
+    private List<String> imageUrls;
 }

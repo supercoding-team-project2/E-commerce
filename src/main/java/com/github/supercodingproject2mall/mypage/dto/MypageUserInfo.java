@@ -12,6 +12,7 @@ import lombok.ToString;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class MypageUserInfo {
     private String email;
+    private String name;
     private String phoneNum;
     private String address;
     private String gender;
