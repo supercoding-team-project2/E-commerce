@@ -60,13 +60,13 @@ public class OrderService {
             String url = urls.isEmpty()? null : urls.get(0);
 
             GetOrderItemResponse orderItemResponse = GetOrderItemResponse.builder()
+                    .cartItemId(cartItemEntity.getId())
                     .itemUrl(url)
                     .itemName(cartItemEntity.getItem().getName())
                     .itemSize(cartItemEntity.getItemSize().getOptionSize())
                     .itemQuantity(cartItemEntity.getQuantity())
                     .itemPrice(cartItemEntity.getItem().getPrice())
                     .build();
-
             orderItemResponses.add(orderItemResponse);
         }
         GetOrderResponse getOrderResponse = GetOrderResponse.builder()
