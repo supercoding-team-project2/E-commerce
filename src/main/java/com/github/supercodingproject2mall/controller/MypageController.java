@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("/api")
+@Slf4j
 public class MypageController {
     private final MypageService mypageService;
     private final JwtTokenProvider jwtTokenProvider;
@@ -37,6 +39,7 @@ public class MypageController {
             content = @Content(schema = @Schema(implementation = MypageResponse.class)))
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> findUserInfo(HttpServletRequest request) {
+        log.info("마이페이지 유저 정보 조회하기 api");
         String token = jwtTokenProvider.resolveToken(request);
             Integer userId = jwtTokenProvider.getUserId(token);
             return mypageService.findUserInfo(userId)
@@ -50,6 +53,7 @@ public class MypageController {
             content = @Content(schema = @Schema(implementation = MypageCartItemsDto.class)))
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserCartItems(HttpServletRequest request) {
+        log.info("마이페이지 유저 장바구니 아이템 조회하기 api");
         String token = jwtTokenProvider.resolveToken(request);
             Integer userId = jwtTokenProvider.getUserId(token);
             List<MypageCartItemsDto> cartItems = mypageService.getCartItemsForUser(userId);
@@ -65,6 +69,7 @@ public class MypageController {
             content = @Content(schema = @Schema(implementation = OrderHistoryDto.class)))
     @ApiResponse(responseCode = "401", description = "Invalid or expired token")
     public MypageApiResponse<?> getUserOrder(HttpServletRequest request){
+        log.info("마이페이지 유저 주문내역 조회하기 api");
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
         List<OrderHistoryDto> orderHistory = mypageService.getOrderHistoryForUser(userId);
