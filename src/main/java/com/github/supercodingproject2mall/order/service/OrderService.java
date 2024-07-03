@@ -81,7 +81,7 @@ public class OrderService {
     }
 
     @Transactional
-    public List<InsufficientItem> upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
+    public Integer upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
         UserEntity orderUser = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("주문자 정보를 찾을 수 없습니다."));
 
@@ -154,7 +154,7 @@ public class OrderService {
 
             cartItemRepository.deleteById(cartItemId);
         }
-        return insufficientItems;
+        return orderEntity.getId();
     }
 
     public GetOrderSuccess successOrder(Integer userId, String orderId) {

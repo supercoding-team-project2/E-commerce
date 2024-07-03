@@ -85,12 +85,11 @@ public class CartController {
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
         try{
-            orderService.upLoadOrder(userId,uploadOrderRequest);
-            return ResponseEntity.ok(new CartResponse("성공적으로 결제가 되었습니다."));
+            Integer orderId = orderService.upLoadOrder(userId,uploadOrderRequest);
+            return ResponseEntity.ok(new PostOrderResponse(orderId,"성공적으로 결제가 되었습니다."));
         }catch (InsufficientStockException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getInsufficientItems());
         }
-
     }
 
     @GetMapping("/cart/order/success/{orderId}")
