@@ -4,6 +4,7 @@ import com.github.supercodingproject2mall.auth.jwt.JwtTokenProvider;
 import com.github.supercodingproject2mall.sale.dto.SaleGetDto;
 import com.github.supercodingproject2mall.sale.dto.SalePostDto;
 import com.github.supercodingproject2mall.sale.dto.SalePutDto;
+import com.github.supercodingproject2mall.sale.mapper.SaleMapper;
 import com.github.supercodingproject2mall.sale.service.SaleGetService;
 import com.github.supercodingproject2mall.sale.service.SalePostService;
 import com.github.supercodingproject2mall.sale.service.SalePutService;
@@ -27,20 +28,21 @@ public class SaleController {
     private final SaleGetService saleGetService;
     private final SalePutService salePutService;
     private final JwtTokenProvider jwtTokenProvider;
+    private final SaleMapper saleMapper;
 
     @PostMapping(value = "/add", consumes = "multipart/form-data")
     public ResponseEntity<SalePostDto> addSaleItem(
-            @RequestPart("salePostDto") SalePostDto salePostDto,
+            @RequestPart("salePostDto") String salePostDtoString,
             @RequestPart("images") List<MultipartFile> images,
             HttpServletRequest request) {
         try {
-            if (salePostDto == null || images == null || images.isEmpty()) {
-                return ResponseEntity.badRequest().body(new SalePostDto());
-            }
             String token = jwtTokenProvider.resolveToken(request);
             Integer userId = jwtTokenProvider.getUserId(token);
 
+            SalePostDto salePostDto = saleMapper.mapJsonToSalePostDto(salePostDtoString);
+
             SalePostDto response = salePostService.addSaleItem(salePostDto, userId, images);
+
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new SalePostDto());
