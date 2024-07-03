@@ -8,6 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 public class GetOrderItemResponse {
+    private Integer cartItemId;
     private String itemUrl;
     private String itemName;
     private String itemSize;
