@@ -15,7 +15,6 @@ import com.github.supercodingproject2mall.auth.repository.UserRepository;
 import com.github.supercodingproject2mall.auth.response.LoginResponse;
 import com.github.supercodingproject2mall.auth.response.SignupResponse;
 import com.github.supercodingproject2mall.cart.service.CartService;
-import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
 import com.github.supercodingproject2mall.cartItem.repository.CartItemRepository;
 import com.github.supercodingproject2mall.mypage.service.StorageService;
 import io.jsonwebtoken.JwtException;
@@ -35,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Date;
-import java.util.List;
 
 @Slf4j
 @Service
@@ -88,7 +86,7 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("이메일에 해당하는 유저가 없습니다: " + loginDTO.getEmail()));
 
-        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L); // 10분
+        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L * 6); // 10분
         String refreshToken = jwtTokenProvider.createToken("refresh", user.getEmail(), user.getId(), 86400000L);
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
@@ -99,10 +97,9 @@ public class AuthService {
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
         Integer cartId = cartService.findCart(user.getId());
-        List<CartItemEntity> cartItemList = cartItemRepository.findAllByCartId(cartId);
-        int cartItemCount = cartItemList.size();
+        Integer itemQuantity = cartItemRepository.findAndSumByCartId(cartId);
 
-        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, cartItemCount));
+        return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, itemQuantity));
     }
 
     private Cookie createCookie(String key, String value) {
