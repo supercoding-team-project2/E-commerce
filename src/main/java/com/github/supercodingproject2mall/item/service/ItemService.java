@@ -42,40 +42,29 @@ public class ItemService {
 
     public Page<AllItemDto> getItemByCategory(String category, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        List<AllItemDto> allItems = new ArrayList<>();
 
         if(category.equals("ALL")){
             Page<ItemEntity> itemEntities = itemRepository.findAll(pageable);
-
-            for (ItemEntity itemEntity : itemEntities.getContent()) {
-                List<String> urls = imgRepository.findUrlByItemId(itemEntity);
-                String url = urls.isEmpty()? null : urls.get(0);
-
-                AllItemDto allItem = AllItemDto.builder()
-                        .id(itemEntity.getId())
-                        .name(itemEntity.getName())
-                        .price(itemEntity.getPrice())
-                        .url(url)
-                        .build();
-                allItems.add(allItem);
-            }
-            return new PageImpl<>(allItems,pageable,itemEntities.getTotalElements());
-        }else {
+            return new PageImpl<>(itemEntitiesToAllItemDto(itemEntities),pageable,itemEntities.getTotalElements());
+        } else {
             Page<ItemEntity> itemEntities = itemRepository.findAllByCategory(pageable, category);
-
-            for (ItemEntity itemEntity : itemEntities.getContent()) {
-                List<String> urls = imgRepository.findUrlByItemId(itemEntity);
-                String url = urls.isEmpty()? null : urls.get(0);
-
-                AllItemDto allItem = AllItemDto.builder()
-                        .id(itemEntity.getId())
-                        .name(itemEntity.getName())
-                        .price(itemEntity.getPrice())
-                        .url(url)
-                        .build();
-                allItems.add(allItem);
-            }
-            return new PageImpl<>(allItems,pageable,itemEntities.getTotalElements());
+            return new PageImpl<>(itemEntitiesToAllItemDto(itemEntities),pageable,itemEntities.getTotalElements());
         }
+    }
+    private List<AllItemDto> itemEntitiesToAllItemDto(Page<ItemEntity> itemEntities){
+        List<AllItemDto> allItems = new ArrayList<>();
+        for (ItemEntity itemEntity : itemEntities.getContent()) {
+            List<String> urls = imgRepository.findUrlByItemId(itemEntity);
+            String url = urls.isEmpty()? null : urls.get(0);
+
+            AllItemDto allItem = AllItemDto.builder()
+                    .id(itemEntity.getId())
+                    .name(itemEntity.getName())
+                    .price(itemEntity.getPrice())
+                    .url(url)
+                    .build();
+            allItems.add(allItem);
+        }
+        return allItems;
     }
 }
