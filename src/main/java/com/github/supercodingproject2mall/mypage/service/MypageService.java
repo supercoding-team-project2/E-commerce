@@ -41,12 +41,14 @@ public class MypageService {
     }
 
     public List<OrderHistoryDto> getOrderHistoryForUser(Integer userId) {
-        String json = orderRepository.findOrdersWithItemsByUserId(userId);
-        try {
-            return objectMapper.readValue(json, new TypeReference<List<OrderHistoryDto>>() {});
-        } catch (IOException e) {
-            throw new RuntimeException("JSON parsing error", e);
-        }
+        List<String> jsonList = orderRepository.findOrdersWithItemsByUserId(userId);
+        return jsonList.stream().flatMap(json -> {
+            try {
+                return objectMapper.readValue(json, new TypeReference<List<OrderHistoryDto>>() {}).stream();
+            } catch (IOException e) {
+                throw new RuntimeException("JSON parsing error", e);
+            }
+        }).collect(Collectors.toList());
     }
 
     public MypageUserInfo updateUserInfo(Integer userId, MypageUserInfoUpdateDto updateDto , String imageUrl) {
