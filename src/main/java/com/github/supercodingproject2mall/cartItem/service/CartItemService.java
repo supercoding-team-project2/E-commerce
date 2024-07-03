@@ -48,7 +48,7 @@ public class CartItemService {
         List<GetCartItem> cartItems = new ArrayList<>();
 
         for(CartItemEntity cartItemEntity : cartItemEntities){
-            log.info("유저의 카트아이템 cartItemEntity: {}", cartItemEntity.toString());
+            log.info("유저의 카트아이템 cartItemEntity: {}", cartItemEntity);
             List<String> urls = imgRepository.findUrlByItemId(cartItemEntity.getItem());
             log.info("아이템 url: {}", urls);
             String url = urls.isEmpty()? null : urls.get(0);
@@ -66,7 +66,7 @@ public class CartItemService {
                     .itemPrice(cartItemEntity.getItem().getPrice())
                     .optionSize(optionSize)
                     .build();
-            log.info("조회할 카트아이템 :{}", getCartItem.toString());
+            log.info("조회할 카트아이템 :{}", getCartItem);
             cartItems.add(getCartItem);
         }
         return cartItems;

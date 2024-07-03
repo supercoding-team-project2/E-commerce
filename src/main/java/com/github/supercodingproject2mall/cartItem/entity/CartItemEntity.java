@@ -11,7 +11,6 @@ import lombok.*;
 @NoArgsConstructor
 @Entity
 @AllArgsConstructor
-@ToString
 @Table(name = "cart_items")
 public class CartItemEntity {
     @Id @Column(name = "id") @GeneratedValue(strategy = GenerationType.IDENTITY)
