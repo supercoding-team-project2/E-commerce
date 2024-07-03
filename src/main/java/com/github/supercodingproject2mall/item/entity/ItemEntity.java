@@ -2,11 +2,13 @@ package com.github.supercodingproject2mall.item.entity;
 
 import com.github.supercodingproject2mall.auth.entity.UserEntity;
 import com.github.supercodingproject2mall.cartItem.entity.CartItemEntity;
+import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -50,6 +52,15 @@ public class ItemEntity {
     @Column(name = "category_kind", length = 10, nullable = false)
     private String categoryKind;
 
+    @OneToMany(mappedBy = "itemId")
+    private Set<ItemSizeEntity> itemSizes;
+
     @OneToMany(mappedBy = "item")
     private Set<CartItemEntity> cartItems;
+
+    @ElementCollection
+    @CollectionTable(name = "item_images", joinColumns = @JoinColumn(name = "item_id"))
+    @Column(name = "image_url", length = 1000)
+    private List<String> imageUrls;
+
 }

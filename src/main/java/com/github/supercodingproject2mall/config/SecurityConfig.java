@@ -45,6 +45,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/mypage/**").permitAll()
                                 .requestMatchers("/api/cart/**").permitAll()
                                 .requestMatchers("/api/item/**").permitAll()
+                                .requestMatchers("/api/sale/**").permitAll()
                                 .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**").permitAll()
                 )
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
