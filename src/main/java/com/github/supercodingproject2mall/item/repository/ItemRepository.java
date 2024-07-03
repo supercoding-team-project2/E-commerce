@@ -1,9 +1,11 @@
 package com.github.supercodingproject2mall.item.repository;
 
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -28,4 +30,14 @@ public interface ItemRepository extends JpaRepository<ItemEntity , Integer> {
 
     @Query("SELECT i FROM ItemEntity i WHERE (i.categoryGender = :category or i.categoryKind =: category) and i.totalStock !=0")
     Page<ItemEntity> findAllByCategory(Pageable pageable, String category);
-}
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ItemEntity i SET i.totalStock = :totalStock WHERE i.id = :itemId")
+        void updateTotalStock(@Param("itemId") Integer itemId, @Param("totalStock") int totalStock);
+
+        @Transactional
+        @Modifying
+        @Query("UPDATE ItemEntity i SET i.imageUrls = :imageUrl WHERE i.id = :itemId")
+        void updateImageUrl(@Param("itemId") Integer itemId, @Param("imageUrl") String imageUrl);
+    }

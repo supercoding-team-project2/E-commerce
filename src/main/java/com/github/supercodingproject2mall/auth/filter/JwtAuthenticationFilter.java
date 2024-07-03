@@ -29,12 +29,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         final String SWAGGER_URL =  "/swagger-ui/";
         final String API_DOCS_URL = "/api-docs/";
         final String ITEM_URL = "/api/item/";
+        final String SALE_URL =   "/api/auth/sale";
         String requestUri = request.getRequestURI().toString();
         String jwtToken = jwtTokenProvider.resolveToken(request);
 
         // TODO : 물품조회 uri 추가하기
         boolean isPublicUri = requestUri.equals(SIGNUP_URL) || requestUri.equals(LOGIN_URL) || requestUri.startsWith(ITEM_URL) ||
-                requestUri.startsWith(SWAGGER_URL) || requestUri.startsWith(API_DOCS_URL);
+                requestUri.startsWith(SWAGGER_URL) || requestUri.startsWith(API_DOCS_URL) || requestUri.startsWith(SALE_URL);
 
         if (jwtToken == null) {
             if (isPublicUri) {
