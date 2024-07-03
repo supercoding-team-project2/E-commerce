@@ -88,7 +88,7 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("이메일에 해당하는 유저가 없습니다: " + loginDTO.getEmail()));
 
-        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L); // 10분
+        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L * 6); // 10분
         String refreshToken = jwtTokenProvider.createToken("refresh", user.getEmail(), user.getId(), 86400000L);
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
