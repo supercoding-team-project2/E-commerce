@@ -97,7 +97,7 @@ public class AuthService {
         TokenDTO tokenDTO = new TokenDTO(accessToken, refreshToken);
 
         Integer cartId = cartService.findCart(user.getId());
-        Integer itemQuantity = cartItemRepository.findAndSumByCartId(cartId);
+        int itemQuantity = cartItemRepository.findAndSumByCartId(cartId);
 
         return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, itemQuantity));
     }
