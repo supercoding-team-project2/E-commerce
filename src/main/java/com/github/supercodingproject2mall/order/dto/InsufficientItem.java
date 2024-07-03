@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InsufficientItem {
-    private String item;
+    private Integer itemSizeId;
     private int quantity;
 }

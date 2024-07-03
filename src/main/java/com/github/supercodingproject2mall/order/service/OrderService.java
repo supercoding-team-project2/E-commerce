@@ -118,7 +118,7 @@ public class OrderService {
             //주문할 수량이 아이템의 재고보다 크면 주문 안됨
             Integer quantity = cartItemEntity.getQuantity();
             if(quantity > cartItemEntity.getItemSize().getStock()){
-                insufficientItems.add(new InsufficientItem(cartItemEntity.getItem().getName(), cartItemEntity.getItemSize().getStock()));
+                insufficientItems.add(new InsufficientItem(cartItemEntity.getItemSize().getId(), cartItemEntity.getItemSize().getStock()));
                 if (!insufficientItems.isEmpty()) {
                     throw new InsufficientStockException("재고가 부족합니다.",insufficientItems);
                 }
