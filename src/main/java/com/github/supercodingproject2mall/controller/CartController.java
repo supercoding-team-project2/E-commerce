@@ -73,10 +73,10 @@ public class CartController {
 
     @GetMapping("/cart/order")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<GetOrderResponse> orderCart(HttpServletRequest request, @RequestBody GetOrderRequest getOrderRequest){
+    public ResponseEntity<GetOrderResponse> orderCart(HttpServletRequest request, @RequestParam("cartItemId") List<Integer> cartItemIds){
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
-        return ResponseEntity.ok(orderService.getOrderCart(userId,getOrderRequest));
+        return ResponseEntity.ok(orderService.getOrderCart(userId,cartItemIds));
     }
 
     @PostMapping("/cart/order")

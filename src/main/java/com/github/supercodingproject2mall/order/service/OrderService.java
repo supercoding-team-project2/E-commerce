@@ -41,15 +41,17 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final OrderItemRepository orderItemRepository;
 
-    public GetOrderResponse getOrderCart(Integer userId, GetOrderRequest getOrderRequest) {
+    public GetOrderResponse getOrderCart(Integer userId, List<Integer> cartItemIds) {
 
+        log.info("주문할 유저의 ID={}",userId);
+        log.info("주문 카트아이템 {}", cartItemIds);
         UserEntity userEntity = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("주문할 유저의 정보를 찾을 수 없습니다."));
 
         ArrayList<GetOrderItemResponse> orderItemResponses = new ArrayList<>();
 
-        List<Integer> getCartItemIds = getOrderRequest.getCartItemId();
-        for(Integer getCartItemId : getCartItemIds) {
+        //List<String> getCartItemIds = getOrderRequest.getCartItemId();
+        for(Integer getCartItemId : cartItemIds) {
             CartItemEntity cartItemEntity = cartItemRepository.findById(getCartItemId)
                     .orElseThrow(()->new NotFoundException("주문할 cartItem을 찾을 수 없습니다."));
 
