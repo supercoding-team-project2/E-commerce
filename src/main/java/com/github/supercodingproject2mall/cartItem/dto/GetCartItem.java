@@ -1,9 +1,6 @@
 package com.github.supercodingproject2mall.cartItem.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -11,6 +8,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString
 public class GetCartItem {
     private Integer cartItemId;
     private String itemUrl;

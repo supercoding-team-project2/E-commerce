@@ -47,6 +47,7 @@ public class CartController {
     public ResponseEntity<CartItemResponse> getCart(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
+        log.info("장바구니 조회할 유저의 userId={}",userId);
         List<GetCartItem> getCartItems = cartItemService.getUserCart(userId);
         return ResponseEntity.ok(new CartItemResponse(getCartItems));
     }
@@ -72,10 +73,10 @@ public class CartController {
 
     @GetMapping("/cart/order")
     @SecurityRequirement(name = "Bearer Authentication")
-    public ResponseEntity<GetOrderResponse> orderCart(HttpServletRequest request, @RequestBody GetOrderRequest getOrderRequest){
+    public ResponseEntity<GetOrderResponse> orderCart(HttpServletRequest request, @RequestParam("cartItemId") List<Integer> cartItemIds){
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
-        return ResponseEntity.ok(orderService.getOrderCart(userId,getOrderRequest));
+        return ResponseEntity.ok(orderService.getOrderCart(userId,cartItemIds));
     }
 
     @PostMapping("/cart/order")

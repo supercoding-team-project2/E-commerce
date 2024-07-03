@@ -8,6 +8,7 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class AllItemDto {
+    private Integer id;
     private String name;
     private Integer price;
     private String url;
