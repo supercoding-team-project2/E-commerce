@@ -40,6 +40,7 @@ public class CartItemService {
     public List<GetCartItem> getUserCart(Integer userId){
         CartEntity cartEntity = cartRepository.findByUserId(userId)
                 .orElse(null);
+        log.info("유저의 카트 번호 cartId: {}", cartEntity.getId());
         if(cartEntity == null){
             return new ArrayList<>();
         }
@@ -47,7 +48,9 @@ public class CartItemService {
         List<GetCartItem> cartItems = new ArrayList<>();
 
         for(CartItemEntity cartItemEntity : cartItemEntities){
+            log.info("유저의 카트아이템 cartItemEntity: {}", cartItemEntity.toString());
             List<String> urls = imgRepository.findUrlByItemId(cartItemEntity.getItem());
+            log.info("아이템 url: {}", urls);
             String url = urls.isEmpty()? null : urls.get(0);
 
             Integer totalPrice = cartItemEntity.getItem().getPrice() * cartItemEntity.getQuantity();
@@ -63,7 +66,7 @@ public class CartItemService {
                     .itemPrice(cartItemEntity.getItem().getPrice())
                     .optionSize(optionSize)
                     .build();
-
+            log.info("조회할 카트아이템 :{}", getCartItem.toString());
             cartItems.add(getCartItem);
         }
         return cartItems;
@@ -128,9 +131,9 @@ public class CartItemService {
         ItemEntity itemEntity = cartItemEntity.getItem();
         //수정할 아이템의 사이즈를 찾아 itemsizeEntity의 id 가져오기
         List<ItemSizeEntity> itemSizeEntities = itemSizeRepository.findAllByItemId(itemEntity);
-        log.info("ItemSizeEntities = {}", itemSizeEntities);
+        log.info("수정할 아이템의 모든 사이즈 옵션 ItemSizeEntities = {}", itemSizeEntities);
         for(ItemSizeEntity itemSizeEntity : itemSizeEntities){
-            log.info("updateCartRequest ItemSize ={}, itemsSizeEntity = {}",updateCartRequest.getItemSize(),itemSizeEntity.getOptionSize());
+            log.info("수정할 updateCartRequest ItemSize ={}, itemsSizeEntity = {}",updateCartRequest.getItemSize(),itemSizeEntity.getOptionSize());
             if(updateCartRequest.getItemSize().equals(itemSizeEntity.getOptionSize())){
                 updateItemSize = itemSizeEntity;
                 break;

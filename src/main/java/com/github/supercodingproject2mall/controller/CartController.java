@@ -47,6 +47,7 @@ public class CartController {
     public ResponseEntity<CartItemResponse> getCart(HttpServletRequest request) {
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
+        log.info("장바구니 조회할 유저의 userId={}",userId);
         List<GetCartItem> getCartItems = cartItemService.getUserCart(userId);
         return ResponseEntity.ok(new CartItemResponse(getCartItems));
     }

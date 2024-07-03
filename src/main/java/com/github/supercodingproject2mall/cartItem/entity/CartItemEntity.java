@@ -4,16 +4,14 @@ import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import com.github.supercodingproject2mall.cart.entity.CartEntity;
 import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder(toBuilder = true)
 @Getter
 @NoArgsConstructor
 @Entity
 @AllArgsConstructor
+@ToString
 @Table(name = "cart_items")
 public class CartItemEntity {
     @Id @Column(name = "id") @GeneratedValue(strategy = GenerationType.IDENTITY)
