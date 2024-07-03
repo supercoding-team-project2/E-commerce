@@ -4,6 +4,7 @@ import com.github.supercodingproject2mall.item.entity.ItemEntity;
 import com.github.supercodingproject2mall.itemSize.entity.ItemSizeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +22,10 @@ public interface ItemSizeRepository extends JpaRepository<ItemSizeEntity, Intege
         List<String> findOptionSizeByItemId(ItemEntity itemId);
 
         List<ItemSizeEntity> findAllByItemId(ItemEntity item);
+
+        @Query("SELECT is.optionSize, is.stock FROM ItemSizeEntity is WHERE is.itemId.id = :itemId")
+        List<Object[]> findSizesByItemId(@Param("itemId") Integer itemId);
+
+        @Query("SELECT SUM(is.stock) FROM ItemSizeEntity is WHERE is.itemId.id = :itemId")
+        int sumStockByItemId(@Param("itemId") Integer itemId);
 }
