@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 public class GetOrderItemResponse {
     private Integer cartItemId;
+    private Integer itemSizeId;
     private String itemUrl;
     private String itemName;
     private String itemSize;

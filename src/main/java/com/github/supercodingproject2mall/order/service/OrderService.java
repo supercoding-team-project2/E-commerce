@@ -61,6 +61,7 @@ public class OrderService {
 
             GetOrderItemResponse orderItemResponse = GetOrderItemResponse.builder()
                     .cartItemId(cartItemEntity.getId())
+                    .itemSizeId(cartItemEntity.getItemSize().getId())
                     .itemUrl(url)
                     .itemName(cartItemEntity.getItem().getName())
                     .itemSize(cartItemEntity.getItemSize().getOptionSize())
