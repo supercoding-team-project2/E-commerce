@@ -27,7 +27,7 @@ public interface OrderRepository extends JpaRepository<OrderEntity, Integer> {
             "FROM orders o " +
             "WHERE o.user_id = :userId " +
             "GROUP BY o.id, o.order_date, o.total_price", nativeQuery = true)
-    String findOrdersWithItemsByUserId(Integer userId);
+    List<String> findOrdersWithItemsByUserId(Integer userId);
 
     @Query("SELECT o.orderNumber FROM OrderEntity o")
     List<String> findOrderNumber();

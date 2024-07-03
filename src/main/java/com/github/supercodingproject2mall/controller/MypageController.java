@@ -6,6 +6,7 @@ import com.github.supercodingproject2mall.mypage.exception.ErrorType;
 import com.github.supercodingproject2mall.mypage.service.MypageService;
 import com.github.supercodingproject2mall.mypage.service.StorageService;
 import com.github.supercodingproject2mall.order.dto.OrderHistoryDto;
+import com.github.supercodingproject2mall.order.dto.OrderHistoryResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -67,10 +68,11 @@ public class MypageController {
         String token = jwtTokenProvider.resolveToken(request);
         Integer userId = jwtTokenProvider.getUserId(token);
         List<OrderHistoryDto> orderHistory = mypageService.getOrderHistoryForUser(userId);
+        OrderHistoryResponseDto orderHistoryResponseDto = new OrderHistoryResponseDto(orderHistory);
         if (orderHistory.isEmpty()){
             return MypageApiResponse.error("order history not found", ErrorType.NOTIFICATION_NOT_FOUND);
         }
-        return MypageApiResponse.success(orderHistory, "order history retrieved successfully");
+        return MypageApiResponse.success(orderHistoryResponseDto, "order history retrieved successfully");
     }
 
     @PutMapping("/mypage/user")
