@@ -6,6 +6,7 @@ import com.github.supercodingproject2mall.item.dto.ItemDetailDto;
 import com.github.supercodingproject2mall.item.service.ItemService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +15,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @SecurityRequirement(name = "Bearer Authentication")
 @RequestMapping("/api")
+@Slf4j
 public class ItemController {
     private final ItemService itemService;
     @GetMapping("/item/{itemId}")
     public ResponseEntity<ItemDetailDto> getItemDetail (@PathVariable String itemId) throws JsonProcessingException {
+        log.info("상품 상세조회 api 호출");
         ItemDetailDto itemDetail = itemService.getItemDetail(itemId);
         if (itemDetail == null) {
             return ResponseEntity.notFound().build();
