@@ -68,10 +68,10 @@ public class SaleController {
             String token = jwtTokenProvider.resolveToken(request);
             Integer userId = jwtTokenProvider.getUserId(token);
 
-            salePutService.updateItemStock(salePutDto, userId);
+            salePutService.updateItemStockAndPrice(salePutDto, userId);
             return ResponseEntity.ok("성공적으로 수정 되었습니다.");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("재고 업데이트 실패.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("상품 정보 업데이트 실패.");
         }
     }
 }

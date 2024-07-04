@@ -33,4 +33,15 @@ public interface SalePutRepository extends JpaRepository<ItemSizeEntity, Integer
     @Transactional
     @Query("DELETE FROM ItemSizeEntity is WHERE is.itemId.id = :itemId AND is.stock = 0 AND is.optionSize IS NOT NULL")
     void deleteZeroStockSizesWithOptionSize(Integer itemId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ItemEntity i SET i.price = :newPrice WHERE i.id = :itemId")
+    int updateItemPrice(Integer itemId, Integer newPrice);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE ItemEntity i SET i.categoryGender = :categoryGender WHERE i.id = :itemId")
+    int updateCategoryGender(Integer itemId, String categoryGender);
 }
+
