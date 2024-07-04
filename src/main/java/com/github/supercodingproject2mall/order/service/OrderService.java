@@ -60,13 +60,14 @@ public class OrderService {
             String url = urls.isEmpty()? null : urls.get(0);
 
             GetOrderItemResponse orderItemResponse = GetOrderItemResponse.builder()
+                    .cartItemId(cartItemEntity.getId())
+                    .itemSizeId(cartItemEntity.getItemSize().getId())
                     .itemUrl(url)
                     .itemName(cartItemEntity.getItem().getName())
                     .itemSize(cartItemEntity.getItemSize().getOptionSize())
                     .itemQuantity(cartItemEntity.getQuantity())
                     .itemPrice(cartItemEntity.getItem().getPrice())
                     .build();
-
             orderItemResponses.add(orderItemResponse);
         }
         GetOrderResponse getOrderResponse = GetOrderResponse.builder()
@@ -81,7 +82,7 @@ public class OrderService {
     }
 
     @Transactional
-    public List<InsufficientItem> upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
+    public Integer upLoadOrder(Integer userId, UploadOrderRequest uploadOrderRequest) {
         UserEntity orderUser = userRepository.findById(userId)
                 .orElseThrow(()-> new NotFoundException("주문자 정보를 찾을 수 없습니다."));
 
@@ -117,7 +118,7 @@ public class OrderService {
             //주문할 수량이 아이템의 재고보다 크면 주문 안됨
             Integer quantity = cartItemEntity.getQuantity();
             if(quantity > cartItemEntity.getItemSize().getStock()){
-                insufficientItems.add(new InsufficientItem(cartItemEntity.getItem().getName(), cartItemEntity.getItemSize().getStock()));
+                insufficientItems.add(new InsufficientItem(cartItemEntity.getItemSize().getId(), cartItemEntity.getItemSize().getStock()));
                 if (!insufficientItems.isEmpty()) {
                     throw new InsufficientStockException("재고가 부족합니다.",insufficientItems);
                 }
@@ -154,7 +155,7 @@ public class OrderService {
 
             cartItemRepository.deleteById(cartItemId);
         }
-        return insufficientItems;
+        return orderEntity.getId();
     }
 
     public GetOrderSuccess successOrder(Integer userId, String orderId) {

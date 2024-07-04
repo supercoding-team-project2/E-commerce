@@ -99,6 +99,11 @@ public class AuthService {
         Integer cartId = cartService.findCart(user.getId());
         Integer itemQuantity = cartItemRepository.findAndSumByCartId(cartId);
 
+        if(itemQuantity == null)
+            itemQuantity = 0;
+
+        log.info("itemQuantity = " + itemQuantity);
+
         return ResponseEntity.status(HttpStatus.OK).body(new LoginResponse(ResponseType.SUCCESS.toString(), tokenDTO, itemQuantity));
     }
 
