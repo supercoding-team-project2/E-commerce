@@ -86,7 +86,12 @@ public class AuthService {
         UserEntity user = userRepository.findByEmail(loginDTO.getEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("이메일에 해당하는 유저가 없습니다: " + loginDTO.getEmail()));
 
-        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L * 6); // 10분
+        if(user.getStatus().equals(UserStatus.DELETED)) {
+            LoginResponse loginResponse = new LoginResponse(ErrorType.DELETED_USER.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(loginResponse);
+        }
+
+        String accessToken = jwtTokenProvider.createToken("access", user.getEmail(), user.getId(), 600000L * 6); // 60분
         String refreshToken = jwtTokenProvider.createToken("refresh", user.getEmail(), user.getId(), 86400000L);
 
         addRefreshEntity(user.getEmail(), refreshToken, 86400000L);
@@ -110,6 +115,7 @@ public class AuthService {
     private Cookie createCookie(String key, String value) {
         Cookie cookie = new Cookie(key, value);
         cookie.setMaxAge(24 * 60 * 60);
+        cookie.setPath("/");
         cookie.setHttpOnly(true);
 
         return cookie;

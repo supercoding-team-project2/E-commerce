@@ -13,6 +13,7 @@ public enum ErrorType {
     DUPLICATE_USER("이미 존재하는 회원입니다."),
     EMAIL_NOT_EXISTS("존재하지 않는 회원입니다."),
     PASSWORD_NOT_CORRECT("비밀번호를 잘못입력했습니다."),
+    DELETED_USER("탈퇴한 회원입니다."),
 
     SYSTEM_ERROR;
 
