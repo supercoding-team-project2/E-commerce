@@ -12,10 +12,14 @@ public class SalePutDto {
     private Integer itemId;
     private String optionSize;
     private Integer newStock;
+    private Integer newPrice;
+    private String categoryGender;
 
-    public SalePutDto(Integer itemId, String optionSize, Integer newStock) {
+    public SalePutDto(Integer itemId, String optionSize, Integer newStock, Integer newPrice, String categoryGender) {
         this.itemId = itemId;
         this.optionSize = optionSize;
         this.newStock = newStock;
+        this.newPrice = newPrice;
+        this.categoryGender = categoryGender;
     }
 }

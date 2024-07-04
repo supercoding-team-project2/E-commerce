@@ -15,7 +15,7 @@ public class SalePutService {
     private final ItemRepository itemRepository;
 
     @Transactional
-    public void updateItemStock(SalePutDto salePutDto, Integer sellerId) {
+    public void updateItemStockAndPrice(SalePutDto salePutDto, Integer sellerId) {
         if (!salePutRepository.isSellerOfItem(salePutDto.getItemId(), sellerId)) {
             throw new RuntimeException("해당 사용자는 이 상품의 재고를 업데이트할 권한이 없습니다.");
         }
@@ -34,6 +34,20 @@ public class SalePutService {
                 throw new RuntimeException("재고 업데이트 실패.");
             }
             salePutRepository.deleteZeroStockSizes(salePutDto.getItemId());
+        }
+
+        if (salePutDto.getNewPrice() != null) {
+            int updatedPriceRows = salePutRepository.updateItemPrice(salePutDto.getItemId(), salePutDto.getNewPrice());
+            if (updatedPriceRows == 0) {
+                throw new RuntimeException("가격 업데이트 실패.");
+            }
+        }
+
+        if (salePutDto.getCategoryGender() != null) {
+            int updatedGenderRows = salePutRepository.updateCategoryGender(salePutDto.getItemId(), salePutDto.getCategoryGender());
+            if (updatedGenderRows == 0) {
+                throw new RuntimeException("성별 업데이트 실패.");
+            }
         }
 
         updateTotalStock(salePutDto.getItemId());
