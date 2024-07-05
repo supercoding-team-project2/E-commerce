@@ -33,7 +33,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestUri = request.getRequestURI().toString();
         String jwtToken = jwtTokenProvider.resolveToken(request);
 
-        // TODO : 물품조회 uri 추가하기
         boolean isPublicUri = requestUri.equals(SIGNUP_URL) || requestUri.equals(LOGIN_URL) || requestUri.startsWith(ITEM_URL) ||
                 requestUri.startsWith(SWAGGER_URL) || requestUri.startsWith(API_DOCS_URL) || requestUri.startsWith(SALE_URL);
 
