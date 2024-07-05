@@ -12,6 +12,7 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addMapping("/**")
                 .allowedOriginPatterns(
                         "http://localhost:3000/",
+                        "https://second-front.vercel.app/",
                         "https://localhost:3000/",
                         "https://127.0.0.1:3000/"
                 )
